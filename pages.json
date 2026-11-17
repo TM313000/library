@@ -1,3 +1,23 @@
 [
-  {"category": "stocks", "title": "NVIDIA決算 直前ブリーフ", "note": "FY2027 Q3。合格ライン、シナリオ、6:20と7:00の確認項目", "file": "stocks/nvda-q3-fy27.html", "date": "2026-11-17"}
+ {
+  "category": "stocks",
+  "title": "NVIDIA決算 直前ブリーフ",
+  "note": "FY2027 Q3。合格ライン、シナリオ、6:20と7:00の確認項目",
+  "file": "stocks/nvda-q3-fy27.html",
+  "date": "2026-11-17"
+ },
+ {
+  "category": "stocks",
+  "title": "AI株ノート",
+  "note": "決算カレンダー、NBIS影響度、業界マップ、相場メモ",
+  "file": "stocks/ai-note.html",
+  "date": "2026-11-16"
+ },
+ {
+  "category": "life",
+  "title": "ヨーロッパ卒業旅行プラン（ヴェネチア入り）",
+  "note": "2027年2/28〜3/10。ローマ、ヴェネチア、パリ、バルセロナ",
+  "file": "life/europe-trip/index.html",
+  "date": "2026-11-16"
+ }
 ]

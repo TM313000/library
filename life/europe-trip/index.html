@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ヨーロッパ卒業旅行プラン ヴェネチア入り</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a boarding pass that unfolds into a three-leg journey; each city owns one colour. */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --ink:#14213d; --muted:#5b6780; --line:#d5dbe6;
+  --sky:#1f4fd8;            /* route / primary accent */
+  --rome:#c8553d; --venice:#16877f; --paris:#3d6a9e; --bcn:#d99a00;
+  --warn:#b4231f;
+  --display:"Dela Gothic One","Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  --body:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+  --shadow:0 10px 30px rgba(20,33,61,.10);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0d1424; --surface:#172238; --ink:#eef2fb; --muted:#9daac4; --line:#2b3a59;
+    --sky:#7ea2ff; --rome:#ee8068; --venice:#58cfc4; --paris:#7fb0e8; --bcn:#f2bd3b; --warn:#ff8a80;
+    --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0d1424; --surface:#172238; --ink:#eef2fb; --muted:#9daac4; --line:#2b3a59;
+  --sky:#7ea2ff; --rome:#ee8068; --venice:#58cfc4; --paris:#7fb0e8; --bcn:#f2bd3b; --warn:#ff8a80;
+  --shadow:0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.75;font-size:16px;-webkit-text-size-adjust:100%;overflow-x:hidden}
+img{max-width:100%;display:block}
+h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.25;text-wrap:balance}
+.wrap{max-width:760px;margin:0 auto;padding:0 18px}
+section{padding:44px 0 8px}
+.num{font-family:var(--display);font-variant-numeric:tabular-nums}
+a{color:var(--sky)}
+:focus-visible{outline:3px solid var(--sky);outline-offset:3px;border-radius:6px}
+
+/* scroll progress */
+.prog{position:fixed;left:0;top:0;height:4px;width:100%;z-index:50;background:transparent}
+.prog i{display:block;height:100%;width:100%;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--rome),var(--paris),var(--bcn))}
+
+/* hero */
+.hero{position:relative;color:#fff;overflow:hidden;background:#0d1424}
+.hero .slides{position:absolute;inset:0}
+.hero .slides img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;animation:slide 28s infinite}
+.hero .slides img:nth-child(2){animation-delay:7s}
+.hero .slides img:nth-child(3){animation-delay:14s}
+.hero .slides img:nth-child(4){animation-delay:21s}
+@keyframes slide{0%{opacity:0;transform:scale(1.02)}4%{opacity:1}25%{opacity:1}31%{opacity:0;transform:scale(1.16)}100%{opacity:0}}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(9,14,28,.55),rgba(9,14,28,.35) 40%,rgba(9,14,28,.92))}
+.hero .wrap{position:relative;z-index:2;padding-top:56px;padding-bottom:30px}
+.eyebrow{font-size:12px;letter-spacing:.22em;font-weight:700;opacity:.9}
+.hero h1{font-size:clamp(34px,9.5vw,64px);margin:10px 0 6px;letter-spacing:.02em}
+.hero h1 span{display:inline-block;animation:drop .7s cubic-bezier(.2,.9,.2,1.2) both;animation-delay:calc(var(--i)*55ms + .15s)}
+@keyframes drop{from{opacity:0;transform:translateY(-28px) rotate(-8deg)}to{opacity:1;transform:none}}
+.hero p.lead{font-size:15px;max-width:34em;animation:rise .8s .7s both}
+@keyframes rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+
+/* boarding pass */
+.pass{margin-top:24px;background:rgba(255,255,255,.96);color:#14213d;border-radius:16px;box-shadow:0 18px 40px rgba(0,0,0,.35);animation:rise .9s .9s both;position:relative}
+.pass .legs{display:flex;align-items:center;gap:3px;padding:16px 12px 12px;flex-wrap:nowrap}
+.code{font-family:var(--display);font-size:clamp(10px,3.1vw,22px);min-width:0;line-height:1;flex:none}
+.code small{display:block;font-family:var(--body);font-size:9px;font-weight:700;color:#5b6780;margin-top:5px;letter-spacing:0;white-space:nowrap}
+.fly{flex:1;height:2px;min-width:6px;overflow:visible;background:repeating-linear-gradient(90deg,#9aa6bd 0 5px,transparent 5px 10px);position:relative;align-self:flex-start;margin-top:11px}
+.fly svg{position:absolute;top:-7px;left:0;width:14px;height:14px;fill:#1f4fd8;animation:hop 2.6s linear infinite;animation-delay:calc(var(--i)*.65s)}
+@keyframes hop{0%{left:-4%;opacity:0}15%{opacity:1}85%{opacity:1}100%{left:92%;opacity:0}}
+.pass .tear{border-top:2px dashed #c3cbdb;position:relative}
+.pass .tear::before,.pass .tear::after{content:"";position:absolute;top:-10px;width:20px;height:20px;border-radius:50%;background:#0d1424}
+.pass .tear::before{left:-10px}.pass .tear::after{right:-10px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:12px 12px 14px;text-align:center}
+.stats b{display:block;font-family:var(--display);font-weight:400;font-size:clamp(19px,6vw,30px);line-height:1.1;font-variant-numeric:tabular-nums}
+.stats span{font-size:11px;color:#5b6780;font-weight:700}
+.count{margin-top:16px;font-size:13px;font-weight:700;animation:rise .9s 1.1s both}
+.count b{font-family:var(--display);font-weight:400;font-size:22px;margin:0 3px;color:#ffd166}
+
+/* nav chips */
+nav{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;gap:8px;overflow-x:auto;padding-top:10px;padding-bottom:10px;scrollbar-width:none}
+nav .wrap::-webkit-scrollbar{display:none}
+nav button{flex:none;font:700 13px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 14px;cursor:pointer;transition:all .25s}
+nav button.on{background:var(--ink);color:var(--bg);border-color:var(--ink);transform:scale(1.06)}
+
+/* reveal: visible at rest, animated when it enters the screen */
+.rv.in{animation:rise .75s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0s)}
+.rv.in.left{animation-name:fromL}.rv.in.right{animation-name:fromR}.rv.in.pop{animation-name:pop}
+@keyframes fromL{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:none}}
+@keyframes fromR{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:scale(.85)}60%{transform:scale(1.04)}to{opacity:1;transform:none}}
+
+.sec-h{display:flex;align-items:baseline;gap:12px;margin-bottom:14px}
+.sec-h h2{font-size:clamp(24px,6.5vw,34px)}
+.sec-h small{color:var(--muted);font-weight:700;font-size:12px;letter-spacing:.12em}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+
+/* map */
+.map{padding:10px}
+.map svg{width:100%;height:auto;display:block}
+.map .grid circle{fill:var(--line)}
+.map .route{fill:none;stroke:var(--sky);stroke-width:3;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1}
+.map.in .route{animation:draw 3.2s .3s ease-in-out forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.map .dash{fill:none;stroke:var(--surface);stroke-width:1.4;stroke-dasharray:2 9;stroke-linecap:round}
+.map text{font-family:var(--body);font-weight:900;fill:var(--ink)}
+.map .sub{font-size:16px;font-weight:700;fill:var(--muted)}
+.map .ring{fill:none;stroke-width:2;transform-box:fill-box;transform-origin:center;animation:ping 2.4s ease-out infinite}
+@keyframes ping{from{transform:scale(.6);opacity:.9}to{transform:scale(2.6);opacity:0}}
+.map .plane{fill:var(--ink)}
+.legend{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.legend div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 8px;text-align:center;border-top:5px solid var(--c)}
+.legend b{display:block;font-family:var(--display);font-weight:400;font-size:20px;color:var(--c)}
+.legend span{font-size:12px;font-weight:700;color:var(--muted)}
+
+/* city banner */
+.city{--c:var(--rome)}
+.city.venice{--c:var(--venice)}.city.paris{--c:var(--paris)}.city.bcn{--c:var(--bcn)}
+.banner{position:relative;border-radius:22px;overflow:hidden;color:#fff;min-height:210px;display:flex;align-items:flex-end;background:#0d1424;box-shadow:var(--shadow)}
+.banner img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;animation:kb 16s ease-in-out infinite alternate}
+@keyframes kb{from{transform:scale(1.02) translateY(0)}to{transform:scale(1.18) translateY(-3%)}}
+.banner::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(9,14,28,.05) 30%,rgba(9,14,28,.88))}
+.banner .in-b{position:relative;z-index:2;padding:18px;width:100%}
+.banner .no{font-family:var(--display);font-size:13px;letter-spacing:.2em;background:var(--c);color:#fff;display:inline-block;padding:2px 10px;border-radius:6px}
+.banner h2{font-size:clamp(34px,10vw,56px);letter-spacing:.03em;margin-top:6px}
+.banner p{font-size:13px;font-weight:700;opacity:.95}
+
+/* timeline */
+.tl{position:relative;margin:22px 0 0;padding-left:26px}
+.tl::before{content:"";position:absolute;left:7px;top:6px;bottom:6px;width:3px;border-radius:3px;background:var(--line)}
+.tl .fill{position:absolute;left:7px;top:6px;width:3px;border-radius:3px;background:var(--c);height:0}
+.day{position:relative;margin-bottom:18px;padding:16px}
+.day::before{content:"";position:absolute;left:-26px;top:22px;width:17px;height:17px;border-radius:50%;background:var(--surface);border:4px solid var(--c)}
+.day.star::before{animation:beat 1.4s ease-in-out infinite;background:var(--c)}
+@keyframes beat{50%{transform:scale(1.35)}}
+.day header{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.date{flex:none;width:64px;height:60px;border-radius:14px;background:var(--c);color:#fff;display:grid;place-content:center;text-align:center;line-height:1.05}
+.date b{font-family:var(--display);font-weight:400;font-size:17px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.date span{font-size:11px;font-weight:700}
+.day h3{font-size:19px}
+.day .tag{font-size:12px;font-weight:700;color:var(--muted)}
+.ph{position:relative;border-radius:14px;overflow:hidden;margin:6px 0 12px;aspect-ratio:16/10;background:var(--line)}
+.ph img{width:100%;height:100%;object-fit:cover;transition:transform 1.4s cubic-bezier(.2,.7,.2,1)}
+.rv.in .ph img{animation:zoomin 1.6s cubic-bezier(.2,.7,.2,1) both}
+@keyframes zoomin{from{transform:scale(1.25)}to{transform:scale(1)}}
+.ph figcaption{position:absolute;left:10px;bottom:10px;background:rgba(9,14,28,.72);color:#fff;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px}
+.ph.two{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:none;aspect-ratio:auto}
+.ph.two figure{position:relative;border-radius:14px;overflow:hidden;aspect-ratio:4/5}
+.ph.two figure img{position:absolute;inset:0}
+.strip{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;margin:6px -16px 4px;padding:0 16px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.strip::-webkit-scrollbar{display:none}
+.strip figure{flex:none;width:74%;aspect-ratio:4/3;position:relative;border-radius:14px;overflow:hidden;scroll-snap-align:center;background:var(--line)}
+.strip figure img{width:100%;height:100%;object-fit:cover}
+.strip figcaption{position:absolute;left:10px;bottom:10px;background:rgba(9,14,28,.72);color:#fff;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px}
+.rv.in .strip img{animation:zoomin 1.6s cubic-bezier(.2,.7,.2,1) both}
+.swipe{font-size:11px;font-weight:700;color:var(--muted);margin:0 0 10px;display:flex;align-items:center;gap:6px}
+.swipe::after{content:"";width:22px;height:2px;background:var(--c);border-radius:2px;animation:nudge 1.4s ease-in-out infinite}
+@keyframes nudge{50%{transform:translateX(10px)}}
+.stops{list-style:none;display:grid;gap:8px}
+.stops li{display:grid;grid-template-columns:44px 1fr;gap:10px;font-size:15px;line-height:1.55}
+.stops li i{font-style:normal;font-size:12px;font-weight:900;color:var(--c);padding-top:2px}
+.tip{margin-top:12px;font-size:13px;font-weight:500;background:color-mix(in srgb,var(--c) 12%,var(--surface));border-left:4px solid var(--c);border-radius:8px;padding:8px 12px}
+.badge{display:inline-block;font-size:11px;font-weight:900;color:#fff;background:var(--warn);border-radius:999px;padding:2px 10px;margin-left:6px;animation:blink 1.6s ease-in-out infinite}
+@keyframes blink{50%{opacity:.45}}
+
+/* day routes */
+#walk{--c:var(--rome)}
+.ctabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:14px 0 10px}
+.ctabs button{font:900 13px var(--body);padding:10px 2px;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer;transition:all .25s;border-bottom-width:5px}
+.ctabs button[aria-selected="true"]{background:var(--k);border-color:var(--k);color:#fff;transform:translateY(-3px)}
+.dtabs{display:flex;gap:8px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:none}
+.dtabs::-webkit-scrollbar{display:none}
+.dtabs button{flex:none;font:700 13px var(--body);padding:7px 14px;border-radius:999px;border:1.5px solid var(--c);background:transparent;color:var(--c);cursor:pointer;transition:all .2s}
+.dtabs button[aria-selected="true"]{background:var(--c);color:#fff}
+.wpanel{padding:16px;overflow:hidden}
+.wpanel h3{font-size:20px}
+.wmeta{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 12px}
+.wmeta span{font-size:12px;font-weight:700;background:color-mix(in srgb,var(--c) 14%,var(--surface));border-radius:999px;padding:3px 11px}
+.wmap{border-radius:14px;border:1px solid var(--line);background:color-mix(in srgb,var(--c) 6%,var(--bg));overflow:hidden;position:relative}
+.wmap svg{display:block;width:100%;height:auto}
+.wmap .water{fill:none;stroke:color-mix(in srgb,var(--paris) 45%,transparent);stroke-width:9;stroke-linecap:round;stroke-linejoin:round}
+.wmap .wl{font:700 9px var(--body);fill:var(--paris)}
+.wmap .leg{fill:none;stroke:var(--c);stroke-width:3.2;stroke-linecap:round}
+.wmap .leg.walk{stroke-dasharray:1;stroke-dashoffset:1;animation:draw .7s ease-out forwards;animation-delay:calc(var(--i)*.38s + .2s)}
+.wmap .leg.ride{stroke-dasharray:2 7;opacity:0;animation:fadein .5s forwards;animation-delay:calc(var(--i)*.38s + .2s)}
+@keyframes fadein{to{opacity:.85}}
+.wmap .mk{transform-box:fill-box;transform-origin:center;animation:pop .45s cubic-bezier(.2,.9,.2,1.4) both;animation-delay:calc(var(--i)*.38s)}
+.wmap .mk circle{fill:var(--c);stroke:var(--surface);stroke-width:2.5}
+.wmap .mk text{font:400 11px var(--display);fill:#fff;text-anchor:middle}
+.wmap .nm{font:700 9.5px var(--body);fill:var(--ink);paint-order:stroke;stroke:var(--bg);stroke-width:3px;animation:fadein1 .4s both;animation-delay:calc(var(--i)*.38s + .15s)}
+@keyframes fadein1{from{opacity:0}to{opacity:1}}
+.wmap .dot{fill:var(--ink);stroke:var(--surface);stroke-width:2}
+.wmap .sc{stroke:var(--muted);stroke-width:2}
+.wmap .sct{font:700 9px var(--body);fill:var(--muted)}
+.wkey{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;font-weight:700;color:var(--muted);margin:8px 2px 0}
+.wkey i{display:inline-block;width:26px;height:0;border-top:3px solid var(--c);vertical-align:middle;margin-right:5px}
+.wkey i.r{border-top-style:dashed}
+.gmap{display:block;text-align:center;margin:12px 0 4px;font:900 14px var(--body);color:#fff;background:var(--c);padding:11px;border-radius:12px;text-decoration:none;transition:transform .15s}
+.gmap:active{transform:scale(.97)}
+.wsteps{list-style:none;margin-top:14px}
+.wsteps li{display:grid;grid-template-columns:30px 1fr;gap:10px;animation:rise .5s both;animation-delay:calc(var(--i)*.07s)}
+.wsteps .n{width:30px;height:30px;border-radius:50%;background:var(--c);color:#fff;font:400 13px var(--display);display:grid;place-content:center}
+.wsteps .n.off{background:var(--surface);color:var(--c);border:2px dashed var(--c)}
+.wsteps .b{padding-bottom:4px}
+.wsteps .b b{font-size:16px;font-weight:900}
+.wsteps .tm{font:400 13px var(--display);color:var(--c);margin-right:8px;font-variant-numeric:tabular-nums}
+.wsteps .du{display:inline-block;font-size:12px;font-weight:700;color:var(--muted);margin-left:2px}
+.wsteps .nt{font-size:13px;color:var(--muted);line-height:1.6}
+.wsteps .mv{grid-column:1/-1;display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:center;min-height:38px}
+.wsteps .mv::before{content:"";justify-self:center;width:0;height:100%;border-left:3px dotted var(--c)}
+.wsteps .mv span{font-size:12px;font-weight:700;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:2px 10px;justify-self:start}
+
+/* transit */
+.transit{margin:26px 0 0;text-align:center}
+.transit .rail{position:relative;height:30px;overflow:hidden}
+.transit .rail::before{content:"";position:absolute;left:0;right:0;top:14px;border-top:2px dashed var(--line)}
+.transit svg{position:absolute;top:3px;left:0;width:24px;height:24px;fill:var(--sky);animation:cross 4.5s linear infinite}
+@keyframes cross{from{left:-8%}to{left:104%}}
+.transit b{font-family:var(--display);font-weight:400;font-size:17px}
+.transit span{display:block;font-size:13px;color:var(--muted);font-weight:700}
+
+/* budget */
+.budget{padding:18px}
+.total{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.total b{font-family:var(--display);font-weight:400;font-size:clamp(34px,10vw,52px);color:var(--sky);font-variant-numeric:tabular-nums;line-height:1}
+.total span{font-weight:700;color:var(--muted);font-size:13px}
+.bar{margin:12px 0}
+.bar .lab{display:flex;justify-content:space-between;gap:10px;font-size:14px;font-weight:700}
+.bar .lab em{font-style:normal;font-family:var(--display);font-variant-numeric:tabular-nums;white-space:nowrap}
+.track{height:14px;border-radius:999px;background:var(--line);overflow:hidden;position:relative;margin-top:5px}
+.track i{position:absolute;inset:0 auto 0 0;border-radius:999px;transform-origin:0 50%}
+.track .mx{background:color-mix(in srgb,var(--sky) 40%,transparent);width:var(--mx)}
+.track .mn{background:var(--sky);width:var(--mn)}
+.rv.in .track i{animation:grow 1.2s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--d,0s) + .15s)}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.note{font-size:13px;color:var(--muted);margin-top:10px}
+
+/* cautions */
+.warns{display:grid;gap:12px}
+.warn{padding:14px 16px;border-left:6px solid var(--warn)}
+.warn h3{font-family:var(--body);font-weight:900;font-size:16px;margin-bottom:2px}
+.warn p{font-size:14px}
+
+/* checklist */
+.todo{list-style:none;display:grid;gap:10px}
+.todo label{display:flex;gap:12px;align-items:flex-start;padding:13px 14px;cursor:pointer;transition:transform .2s,opacity .3s}
+.todo label:active{transform:scale(.98)}
+.todo input{appearance:none;-webkit-appearance:none;flex:none;width:24px;height:24px;border-radius:8px;border:2.5px solid var(--muted);margin-top:2px;display:grid;place-content:center;transition:all .25s;cursor:pointer}
+.todo input::after{content:"";width:11px;height:6px;border-left:3px solid #fff;border-bottom:3px solid #fff;transform:rotate(-45deg) scale(0);transition:transform .25s cubic-bezier(.2,.9,.2,1.6);margin-top:-3px}
+.todo input:checked{background:var(--sky);border-color:var(--sky)}
+.todo input:checked::after{transform:rotate(-45deg) scale(1)}
+.todo input:checked + span{opacity:.5;text-decoration:line-through}
+.todo span{font-size:15px;font-weight:500}
+.todo span small{display:block;font-size:12px;color:var(--muted);font-weight:700}
+.done{margin:0 0 12px;font-weight:700;font-size:14px}
+.done b{font-family:var(--display);font-weight:400;font-size:20px;color:var(--sky)}
+
+footer{padding:36px 0 60px;font-size:12px;color:var(--muted)}
+footer h3{font-family:var(--body);font-weight:900;font-size:13px;margin-bottom:6px;color:var(--ink)}
+footer ul{list-style:none;columns:2;column-gap:18px}
+footer li{break-inside:avoid;margin-bottom:3px}
+@media (max-width:420px){footer ul{columns:1}.stats span{font-size:10px}}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+  .hero .slides img:first-child{opacity:1}
+  .map .route{stroke-dashoffset:0}
+}
+</style>
+</head>
+<body>
+<div class="prog" aria-hidden="true"><i id="prog"></i></div>
+
+<header class="hero" id="top">
+  <div class="slides" aria-hidden="true">
+    <img src="img/colosseum.jpg" alt="">
+    <img src="img/grandcanal.jpg" alt="">
+    <img src="img/louvre.jpg" alt="">
+    <img src="img/sagradawide.jpg" alt="">
+  </div>
+  <div class="wrap">
+    <div class="eyebrow">2027.02.28 SUN → 03.10 WED ・ ヴェネチア入りの案</div>
+    <h1 id="title" aria-label="ヨーロッパ卒業旅行"></h1>
+    <p class="lead">ローマ、ヴェネチア、パリ、バルセロナを5人で回る11日間。ローマを1日減らして、ヴェネチアに1泊する案です。</p>
+
+    <div class="pass" aria-label="移動の流れ">
+      <div class="legs">
+        <div class="code">KIX<small>関空</small></div>
+        <div class="fly" style="--i:0"><svg viewBox="0 0 24 24"><path d="M2 3l20 9-20 9 5-9z"/></svg></div>
+        <div class="code">ROM<small>ローマ</small></div>
+        <div class="fly" style="--i:1"><svg viewBox="0 0 24 24"><path d="M2 3l20 9-20 9 5-9z"/></svg></div>
+        <div class="code">VCE<small>ヴェネチア</small></div>
+        <div class="fly" style="--i:1.5"><svg viewBox="0 0 24 24"><path d="M2 3l20 9-20 9 5-9z"/></svg></div>
+        <div class="code">PAR<small>パリ</small></div>
+        <div class="fly" style="--i:2"><svg viewBox="0 0 24 24"><path d="M2 3l20 9-20 9 5-9z"/></svg></div>
+        <div class="code">BCN<small>バルセロナ</small></div>
+        <div class="fly" style="--i:3"><svg viewBox="0 0 24 24"><path d="M2 3l20 9-20 9 5-9z"/></svg></div>
+        <div class="code">KIX<small>関空</small></div>
+      </div>
+      <div class="tear"></div>
+      <div class="stats">
+        <div><b data-count="11">11</b><span>日間</span></div>
+        <div><b data-count="4">4</b><span>都市</span></div>
+        <div><b data-count="9">9</b><span>泊</span></div>
+        <div><b data-count="5">5</b><span>人</span></div>
+      </div>
+    </div>
+    <p class="count" id="count"></p>
+  </div>
+</header>
+
+<nav aria-label="ページ内の移動"><div class="wrap">
+  <button data-to="route">ルート</button>
+  <button data-to="rome">ローマ</button>
+  <button data-to="venice">ヴェネチア</button>
+  <button data-to="paris">パリ</button>
+  <button data-to="bcn">バルセロナ</button>
+  <button data-to="walk">まわり方</button>
+  <button data-to="cost">費用</button>
+  <button data-to="care">注意点</button>
+  <button data-to="todo">準備</button>
+</div></nav>
+
+<main>
+<section id="route"><div class="wrap">
+  <div class="sec-h rv"><h2>ルート</h2><small>ROUTE</small></div>
+  <div class="card map rv" id="map">
+    <svg viewBox="0 0 560 430" role="img" aria-label="関空からローマ、ヴェネチア、パリ、バルセロナを回って関空へ戻るルート図">
+      <g class="grid" id="grid"></g>
+      <path id="rt" class="route" pathLength="1" d="M575 255 Q530 292 440 285 Q395 235 430 185 Q300 70 150 95 Q70 200 140 310 Q340 440 575 395"/>
+      <path class="dash" d="M575 255 Q530 292 440 285 Q395 235 430 185 Q300 70 150 95 Q70 200 140 310 Q340 440 575 395"/>
+      <g>
+        <circle class="ring" cx="440" cy="285" r="10" style="stroke:var(--rome)"/>
+        <circle cx="440" cy="285" r="10" style="fill:var(--rome)"/>
+        <text x="548" y="326" font-size="26" text-anchor="end">ローマ</text><text class="sub" x="548" y="348" text-anchor="end">2/28〜3/2・2泊</text>
+      </g>
+      <g>
+        <circle class="ring" cx="430" cy="185" r="10" style="stroke:var(--venice);animation-delay:.5s"/>
+        <circle cx="430" cy="185" r="10" style="fill:var(--venice)"/>
+        <text x="548" y="150" font-size="26" text-anchor="end">ヴェネチア</text><text class="sub" x="548" y="172" text-anchor="end">3/2〜3/3・1泊</text>
+        <text class="sub" x="452" y="240">列車 約4時間</text>
+      </g>
+      <g>
+        <circle class="ring" cx="150" cy="95" r="10" style="stroke:var(--paris);animation-delay:1s"/>
+        <circle cx="150" cy="95" r="10" style="fill:var(--paris)"/>
+        <text x="120" y="46" font-size="26">パリ</text><text class="sub" x="120" y="68">3/3〜3/6・3泊</text>
+      </g>
+      <g>
+        <circle class="ring" cx="140" cy="310" r="10" style="stroke:var(--bcn);animation-delay:1.6s"/>
+        <circle cx="140" cy="310" r="10" style="fill:var(--bcn)"/>
+        <text x="124" y="368" font-size="26" text-anchor="end">バルセロナ</text><text class="sub" x="124" y="390" text-anchor="end">3/6〜3/9・3泊</text>
+      </g>
+      <text class="sub" x="548" y="372" text-anchor="end">関空へ</text>
+      <g class="plane" id="plane"><path d="M-11 -8L13 0L-11 8L-5 0Z"/>
+        <animateMotion dur="13s" repeatCount="indefinite" rotate="auto"><mpath href="#rt"/></animateMotion>
+      </g>
+    </svg>
+  </div>
+  <div class="legend" style="grid-template-columns:repeat(4,1fr)">
+    <div class="rv pop" style="--c:var(--rome)"><b>2泊</b><span>ローマ</span></div>
+    <div class="rv pop" style="--c:var(--venice);--d:.1s"><b>1泊</b><span>ヴェネチア</span></div>
+    <div class="rv pop" style="--c:var(--paris);--d:.2s"><b>3泊</b><span>パリ</span></div>
+    <div class="rv pop" style="--c:var(--bcn);--d:.3s"><b>3泊</b><span>バルセロナ</span></div>
+  </div>
+</div></section>
+
+<div id="days"></div>
+
+<section id="walk"><div class="wrap">
+  <div class="sec-h rv"><h2>1日のまわり方</h2><small>DAY ROUTE</small></div>
+  <p class="note rv" style="margin-top:0">都市と日付のタブを切り替えると、その日の順路と所要時間が見られます。時刻はざっくりした目安で、宿は駅や中心部の近くと仮定しています。</p>
+  <div class="ctabs" id="ctabs" role="tablist" aria-label="都市"></div>
+  <div class="dtabs" id="dtabs" role="tablist" aria-label="日付"></div>
+  <div class="card wpanel" id="wpanel"></div>
+</div></section>
+
+<section id="cost"><div class="wrap">
+  <div class="sec-h rv"><h2>費用の目安</h2><small>1人あたり</small></div>
+  <div class="card budget rv">
+    <div class="total"><b><span data-count="36">36</span><i style="font:900 .6em var(--body);font-style:normal;margin:0 .1em">〜</i><span data-count="50">50</span></b><span>万円（概算）</span></div>
+    <div id="bars"></div>
+    <p class="note">航空券は比較サイトの2027年3月の相場（関空発の乗り継ぎ便で往復13〜14万円台）をもとにした概算です。宿は5人でアパートや相部屋を使う想定です。予約時の実際の金額を確認してください。</p>
+  </div>
+</div></section>
+
+<section id="care"><div class="wrap">
+  <div class="sec-h rv"><h2>注意点</h2><small>CHECK</small></div>
+  <div class="warns">
+    <div class="card warn rv left"><h3>前半は移動が続きます</h3><p>3/2〜3/6の5日間で3回移動し、宿は全部で4カ所になります。荷物は少なめにして、荷造りしやすくしておきます。</p></div>
+    <div class="card warn rv right"><h3>ローマは実質1日だけです</h3><p>バチカンとコロッセオを同じ日に回ります。予約が取れないと成り立たないので、早めに押さえます。</p></div>
+    <div class="card warn rv left"><h3>ヴェネチアは半日と夜、早朝だけです</h3><p>ドゥカーレ宮殿の内部や離島までは回れません。列車が遅れると、さらに短くなります。</p></div>
+    <div class="card warn rv left"><h3>試合の日時はまだ確定していません</h3><p>3/7（日）のバルセロナ対ベティスは暫定の日付です。正式な曜日と時刻は節の15〜20日前に決まり、土曜や月曜にずれることがあります。</p></div>
+    <div class="card warn rv right"><h3>試合が土曜にずれると移動日と重なります</h3><p>3/6（土）は朝の便でバルセロナへ移動します。夜の試合なら間に合いますが、昼の開始だと厳しくなります。朝早い便を、変更できる運賃で取っておきます。</p></div>
+    <div class="card warn rv left"><h3>5人はタクシー1台に乗れません</h3><p>空港からは電車かバスが基本です。タクシーを使うなら2台に分かれます。</p></div>
+    <div class="card warn rv right"><h3>開館日と時間は予約前に再確認</h3><p>夜間開館や休館日は変わることがあります。各施設の公式サイトで確かめてから予約します。</p></div>
+    <div class="card warn rv left"><h3>スリ対策</h3><p>3都市ともスリが多い街です。地下鉄と観光地では、かばんを体の前に持ちます。</p></div>
+  </div>
+</div></section>
+
+<section id="todo"><div class="wrap">
+  <div class="sec-h rv"><h2>準備リスト</h2><small>TO DO</small></div>
+  <p class="done rv">完了 <b id="dn">0</b> / <span id="all">0</span>（タップでチェック。この端末にだけ保存されます）</p>
+  <ul class="todo" id="todos"></ul>
+</div></section>
+</main>
+
+<footer><div class="wrap">
+  <h3>写真の出典（Wikimedia Commons）</h3>
+  <ul id="credits"></ul>
+  <p style="margin-top:10px">各リンク先のページに撮影者とライセンスが載っています。</p>
+</div></footer>
+
+<script>
+(function(){
+var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+var $ = function(s,r){return (r||document).querySelector(s)};
+var el = function(t,c,h){var e=document.createElement(t); if(c)e.className=c; if(h!=null)e.innerHTML=h; return e};
+
+/* title letters */
+'ヨーロッパ卒業旅行'.split('').forEach(function(ch,i){var s=el('span','',ch); s.style.setProperty('--i',i); s.setAttribute('aria-hidden','true'); $('#title').appendChild(s)});
+
+/* countdown */
+(function(){
+  var dep = new Date('2027-02-28T00:00:00+09:00'), box=$('#count');
+  function tick(){
+    var ms = dep - new Date();
+    if(ms<=0){box.textContent='いよいよ出発です';return}
+    var d=Math.floor(ms/864e5), h=Math.floor(ms%864e5/36e5), m=Math.floor(ms%36e5/6e4), s=Math.floor(ms%6e4/1e3);
+    box.innerHTML='出発まで あと <b>'+d+'</b>日 <b>'+h+'</b>時間 <b>'+m+'</b>分 <b>'+s+'</b>秒';
+  }
+  tick(); setInterval(tick,1000);
+})();
+
+/* map grid dots */
+(function(){var g=$('#grid'),h='';for(var y=20;y<430;y+=30)for(var x=20;x<560;x+=30)h+='<circle cx="'+x+'" cy="'+y+'" r="1.4"/>';g.innerHTML=h;
+  if(reduce){var p=$('#plane');p.parentNode.removeChild(p)}})();
+
+/* itinerary data */
+var cities=[
+ {id:'rome',cls:'',no:'01 ITALIA',name:'ローマ',sub:'2/28（日）〜3/2（火） 2泊',img:'colosseum',days:[
+  {d:'2/28',w:'日',t:'関空からローマへ',tag:'移動日',ph:[['trevi','トレヴィの泉'],['pantheon','パンテオン']],s:[['朝','関空を出発（乗り継ぎ便）'],['夕方','ローマ着、宿にチェックイン'],['夜','トレヴィの泉とパンテオン周辺を散歩、夕食']],tip:'ローマは実質この夜と翌日だけです。夜のうちに中心部を歩いておくと、翌日が楽になります。'},
+  {d:'3/1',w:'月',t:'ローマを1日で回る',tag:'丸1日',ph:[['vatmuseum','バチカン美術館'],['sistine','システィーナ礼拝堂'],['vatican','サン・ピエトロ大聖堂'],['colosseum','コロッセオ'],['forum','フォロ・ロマーノ'],['spagna','スペイン広場']],s:[['午前','バチカン美術館とシスティーナ礼拝堂、サン・ピエトロ大聖堂'],['午後','地下鉄で移動してコロッセオ、フォロ・ロマーノ'],['夕方','スペイン広場、時間があればナヴォーナ広場']],tip:'バチカンは朝いちばんの枠、コロッセオは午後の枠で、どちらも事前予約が必須です。'}
+ ],next:['ローマ → ヴェネチア','3/2（火）朝の高速列車・約4時間']},
+ {id:'venice',cls:'venice',no:'02 ITALIA',name:'ヴェネチア',sub:'3/2（火）〜3/3（水） 1泊',img:'grandcanal',days:[
+  {d:'3/2',w:'火',t:'水の都へ',tag:'昼から',ph:[['grandcanal','大運河'],['sanmarco','サン・マルコ寺院'],['doge','ドゥカーレ宮殿'],['rialto','リアルト橋'],['gondola','ゴンドラ']],s:[['朝','ローマ・テルミニ駅を早い時間の列車で出発'],['昼','ヴェネチア・サンタ・ルチア駅に着く、宿に荷物を置く'],['午後','水上バスで大運河を下り、サン・マルコ広場とサン・マルコ寺院へ'],['夕方','リアルト橋、路地を歩いて夕食']],tip:'島内は橋と階段が多いので、宿は駅かローマ広場の近くにします。ドゥカーレ宮殿は外観だけの想定です。'},
+  {d:'3/3',w:'水',t:'早朝の散歩と出発',tag:'午前に移動',ph:[['sospiri','ため息橋']],s:[['早朝','人の少ないサン・マルコ広場と、ため息橋のあたりを散歩'],['午前','バスか水上バスで空港へ、パリ行きの便に乗る']],tip:'早朝は日帰りの観光客がいないので、いちばん静かな時間です。'}
+ ],next:['ヴェネチア → パリ','3/3（水）午前の便・飛行機で約2時間']},
+ {id:'paris',cls:'paris',no:'03 FRANCE',name:'パリ',sub:'3/3（水）〜3/6（土） 3泊',img:'louvre',days:[
+  {d:'3/3',w:'水',t:'パリ到着、セーヌ川沿いへ',tag:'午後から',ph:[['notredame','ノートルダム大聖堂'],['seine','セーヌ川（ポン・ヌフ）'],['eiffel','エッフェル塔']],s:[['昼過ぎ','パリ着、宿に荷物を置く'],['午後','ノートルダム大聖堂、セーヌ川沿いを歩く'],['夜','エッフェル塔の夜景']],tip:'エッフェル塔は日没後、毎正時にライトが点滅します。'},
+  {d:'3/4',w:'木',t:'ヴェルサイユとオルセー',tag:'丸1日',ph:[['versailles','ヴェルサイユ宮殿 鏡の間'],['orsay','オルセー美術館']],s:[['午前','ヴェルサイユ宮殿（電車で約40分）'],['午後','パリに戻って休憩、カフェ'],['夜','オルセー美術館（木曜は夜間開館）']],tip:'木曜はオルセーが夜まで開いているので、昼をヴェルサイユに使えます。'},
+  {d:'3/5',w:'金',t:'ルーヴルとモンマルトル',tag:'丸1日',ph:[['louvre','ルーヴル美術館'],['orangerie','オランジュリー美術館'],['sacrecoeur','モンマルトル（サクレ・クール寺院）']],s:[['午前','ルーヴル美術館（開館と同時に入る）'],['午後','オランジュリー美術館、モンマルトル'],['夜','パリ最後の夕食、シャンゼリゼ通りと凱旋門の夜景']],tip:'この日もパリに泊まるので、夕方に空港へ急ぐ必要がありません。'}
+ ],next:['パリ → バルセロナ','3/6（土）朝の便・飛行機で約1時間40分']},
+ {id:'bcn',cls:'bcn',no:'04 ESPAÑA',name:'バルセロナ',sub:'3/6（土）〜3/9（火） 3泊',img:'sagradawide',days:[
+  {d:'3/6',w:'土',t:'バルセロナ到着、ガウディの日',tag:'昼から',ph:[['sagrada','サグラダ・ファミリア'],['batllo','カサ・バトリョ'],['gracia','グラシア通り（カサ・ミラ）'],['gothic','ゴシック地区（大聖堂）']],s:[['朝','パリを朝の便で出発'],['昼','バルセロナ着、宿に荷物を置く'],['午後','サグラダ・ファミリア、カサ・バトリョ、グラシア通り'],['夕方','ゴシック地区を街歩き、バルで夕食']],tip:'試合が土曜にずれたら、午後の観光を月曜に回してスタジアムへ向かいます。'},
+  {d:'3/7',w:'日',t:'試合の日',tag:'<span class="badge">日時未確定</span>',star:1,ph:[['guell','グエル公園'],['campnou','カンプ・ノウ']],s:[['午前','グエル公園'],['午後','休憩、スタジアムへ移動'],['試合','FCバルセロナ 対 ベティス（カンプ・ノウ）']],tip:'試合が土曜か月曜にずれたら、その日の予定と入れ替えます。'},
+  {d:'3/8',w:'月',t:'モンセラットの絶景',tag:'予備日を兼ねる',ph:[['montserrat','モンセラット'],['boqueria','ボケリア市場']],s:[['午前','電車と登山鉄道でモンセラットへ（片道約1時間半）'],['午後','修道院と展望台、バルセロナへ戻る'],['夕方','ボケリア市場、最後の夕食']],tip:'この旅で唯一の自然と絶景の日です。天気が悪ければ市内観光に切り替えます。'},
+  {d:'3/9',w:'火',t:'帰国',tag:'3/10（水）関空着',s:[['午前','バルセロナ空港を出発（乗り継ぎ便）'],['翌日','3/10（水）関空に到着']],tip:'おつかれさまでした。'}
+ ]}
+];
+var plane='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 3l20 9-20 9 5-9z"/></svg>';
+var host=$('#days');
+cities.forEach(function(c){
+  var sec=el('section','city '+c.cls); sec.id=c.id;
+  var w=el('div','wrap');
+  w.appendChild(el('div','banner rv pop','<img src="img/'+c.img+'.jpg" alt="'+c.name+'の風景"><div class="in-b"><span class="no">'+c.no+'</span><h2>'+c.name+'</h2><p>'+c.sub+'</p></div>'));
+  var tl=el('div','tl'); tl.appendChild(el('div','fill'));
+  c.days.forEach(function(d,i){
+    var h='<header><div class="date"><b>'+d.d+'</b><span>'+d.w+'曜</span></div><div><h3>'+d.t+'</h3><div class="tag">'+d.tag+'</div></div></header>';
+    if(d.ph){
+      if(d.ph.length>1){h+='<div class="strip">'+d.ph.map(function(p){return '<figure><img loading="lazy" src="img/'+p[0]+'.jpg" alt="'+p[1]+'"><figcaption>'+p[1]+'</figcaption></figure>'}).join('')+'</div><p class="swipe">写真'+d.ph.length+'枚・横にスワイプ</p>'}
+      else{h+='<figure class="ph"><img loading="lazy" src="img/'+d.ph[0][0]+'.jpg" alt="'+d.ph[0][1]+'"><figcaption>'+d.ph[0][1]+'</figcaption></figure>'}
+    }
+    h+='<ul class="stops">'+d.s.map(function(s){return '<li><i>'+s[0]+'</i><span>'+s[1]+'</span></li>'}).join('')+'</ul>';
+    h+='<p class="tip">'+d.tip+'</p>';
+    tl.appendChild(el('article','card day rv '+(i%2?'right':'left')+(d.star?' star':''),h));
+  });
+  w.appendChild(tl);
+  if(c.next){w.appendChild(el('div','transit rv','<div class="rail">'+plane+'</div><b>'+c.next[0]+'</b><span>'+c.next[1]+'</span>'))}
+  sec.appendChild(w); host.appendChild(sec);
+});
+
+/* budget bars (万円) */
+var B=[['日本との往復（乗り継ぎ便）',14,18],['欧州内の移動（列車1回、飛行機2回）',3,6],['宿 9泊',6.5,10],['食費',6,8],['入場料',3,3],['試合チケット',1.5,3],['市内交通、空港アクセス',2,2]];
+var bars=$('#bars');
+B.forEach(function(b,i){
+  var r=el('div','bar rv'); r.style.setProperty('--d',(i*0.08)+'s');
+  var txt=b[1]===b[2]?('約'+b[1]+'万円'):(b[1]+'〜'+b[2]+'万円');
+  r.innerHTML='<div class="lab"><span>'+b[0]+'</span><em>'+txt+'</em></div><div class="track"><i class="mx" style="--mx:'+(b[2]/18*100)+'%"></i><i class="mn" style="--mn:'+(b[1]/18*100)+'%"></i></div>';
+  bars.appendChild(r);
+});
+
+/* checklist */
+var T=[['国際線を予約する','関空→ローマ、バルセロナ→関空。5人分の席は早く埋まります'],['宿を4都市分おさえる','ローマ2泊、ヴェネチア1泊、パリ3泊、バルセロナ3泊'],['ローマ→ヴェネチアの列車を予約','3/2（火）朝の早い時間の高速列車'],['ヴェネチア→パリの便を予約','3/3（水）午前の便、預け荷物込みで'],['パリ→バルセロナの便を予約','3/6（土）朝の早い便。変更できる運賃にする'],['バチカン美術館とコロッセオのチケット','日時指定'],['ルーヴルとヴェルサイユのチケット','日時指定'],['サグラダ・ファミリア、グエル公園、カサ・バトリョのチケット','日時指定'],['試合チケットを買う','日時が確定してから（節の15〜20日前）'],['パスポートの残存期間、渡航認証（ETIAS）の要否を確認','外務省や各国の公式サイトで最新情報を確認'],['海外旅行保険に入る','クレジットカード付帯の内容も確認']];
+var ul=$('#todos'), KEY='eu-trip-2027-venice-todo', saved={};
+try{saved=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
+function upd(){var n=ul.querySelectorAll('input:checked').length; $('#dn').textContent=n}
+T.forEach(function(t,i){
+  var li=el('li','rv'); li.style.setProperty('--d',(i*0.05)+'s');
+  li.innerHTML='<label class="card"><input type="checkbox" id="todo-'+i+'"'+(saved[i]?' checked':'')+'><span>'+t[0]+'<small>'+t[1]+'</small></span></label>';
+  li.querySelector('input').addEventListener('change',function(e){saved[i]=e.target.checked; try{localStorage.setItem(KEY,JSON.stringify(saved))}catch(err){} upd()});
+  ul.appendChild(li);
+});
+$('#all').textContent=T.length; upd();
+
+/* credits */
+var C=[['コロッセオ','Colosseo 2020.jpg'],['サン・ピエトロ大聖堂','Basilica di San Pietro in Vaticano September 2015-1a.jpg'],['トレヴィの泉','Trevi Fountain, Rome, Italy 2 - May 2007.jpg'],['エッフェル塔','Tour Eiffel Wikimedia Commons.jpg'],['ルーヴル美術館','Louvre Museum Wikimedia Commons.jpg'],['ヴェルサイユ宮殿','Chateau Versailles Galerie des Glaces.jpg'],['オルセー美術館','MuseeOrsay 20070324.jpg'],['ノートルダム大聖堂','Notre-Dame de Paris, 4 October 2017.jpg'],['サグラダ・ファミリア','Σαγράδα Φαμίλια 2941.jpg'],['サグラダ・ファミリア（遠景）','Sagrada Familia 01.jpg'],['カンプ・ノウ','2014. Camp Nou. Més que un club. Barcelona B40.jpg'],['モンセラット','Monestir de Montserrat vista Roca de St. Jaume.jpg'],['パンテオン',"Pantheon in Rome (1).jpg"],['ナヴォーナ広場',"Piazza Navona 1.jpg"],['フォロ・ロマーノ',"Forum Romanum Rom.jpg"],['スペイン広場',"Piazza di Spagna (Rome) 0004.jpg"],['バチカン美術館',"Vatican Museums Spiral Staircase 2012.jpg"],['システィーナ礼拝堂',"Sistina-interno.jpg"],['サクレ・クール寺院',"Le sacre coeur (paris - france).jpg"],['オランジュリー美術館',"Musée de l'Orangerie.jpg"],['ポン・ヌフ',"Pont Neuf Paris.jpg"],['カサ・バトリョ',"Casa Batllo Overview Barcelona Spain cut.jpg"],['バルセロナ大聖堂',"Barcelona Cathedral Saint Eulalia.jpg"],['グエル公園',"Park Güell 01.jpg"],['ボケリア市場',"Boqueria.jpg"],['カサ・ミラ',"Casa Milà, general view.jpg"],['大運河',"Canal Grande Chiesa della Salute e Dogana dal ponte dell Accademia.jpg"],['サン・マルコ寺院',"Venezia Basilica di San Marco Fassade 2.jpg"],['ドゥカーレ宮殿',"(Venice) Doge's Palace facing the sea.jpg"],['リアルト橋',"Venezia - Ponte di Rialto.jpg"],['ゴンドラ',"Gondolas in Venice.jpg"],['ため息橋',"Antonio Contin - Ponte dei sospiri (Venice).jpg"]];
+$('#credits').innerHTML=C.map(function(c){return '<li><a href="https://commons.wikimedia.org/wiki/File:'+encodeURIComponent(c[1].replace(/ /g,'_'))+'">'+c[0]+'</a></li>'}).join('');
+
+/* reveal on enter */
+var rv=[].slice.call(document.querySelectorAll('.rv'));
+if('IntersectionObserver' in window && !reduce){
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in'); io.unobserve(e.target);
+    [].forEach.call(e.target.querySelectorAll('[data-count]'),run)}})},{threshold:0});
+  rv.forEach(function(e){io.observe(e)});
+}else{rv.forEach(function(e){e.classList.add('in')})}
+
+/* count-up */
+function run(n){ if(n._done||reduce)return; n._done=1; var to=+n.dataset.count,t0=performance.now(),du=1100;
+  (function f(t){var p=Math.min(1,(t-t0)/du); n.textContent=Math.round(to*(1-Math.pow(1-p,3))); if(p<1)requestAnimationFrame(f)})(t0)}
+setTimeout(function(){[].forEach.call(document.querySelectorAll('.hero [data-count]'),run)},1100);
+
+/* nav + scroll progress + timeline fill */
+var btns=[].slice.call(document.querySelectorAll('nav button'));
+btns.forEach(function(b){b.addEventListener('click',function(){var t=document.getElementById(b.dataset.to); if(t){var y=t.getBoundingClientRect().top+window.scrollY-50; window.scrollTo({top:y,behavior:reduce?'auto':'smooth'})}})});
+var tls=[].slice.call(document.querySelectorAll('.tl')), prog=$('#prog'), ticking=false;
+function onScroll(){
+  ticking=false;
+  var h=document.documentElement, max=h.scrollHeight-innerHeight;
+  prog.style.transform='scaleX('+(max>0?Math.min(1,scrollY/max):0)+')';
+  var mid=innerHeight*0.55;
+  tls.forEach(function(t){var r=t.getBoundingClientRect(); var v=Math.max(0,Math.min(r.height-12,mid-r.top)); t.firstChild.style.height=v+'px'});
+  var cur=null; btns.forEach(function(b){var s=document.getElementById(b.dataset.to); if(s&&s.getBoundingClientRect().top<innerHeight*0.4)cur=b});
+  btns.forEach(function(b){var on=b===cur; if(on!==b.classList.contains('on')){b.classList.toggle('on',on); if(on&&b.scrollIntoView){var p=b.parentNode; p.scrollTo({left:b.offsetLeft-p.clientWidth/2+b.clientWidth/2,behavior:reduce?'auto':'smooth'})}}});
+}
+addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(onScroll)}},{passive:true});
+addEventListener('resize',onScroll); onScroll();
+})();
+/* ---------- day routes ---------- */
+(function(){
+var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+var RIV={
+ tiber:{n:'テヴェレ川',p:[[41.9125,12.4735],[41.9075,12.4705],[41.9031,12.4663],[41.8990,12.4650],[41.8950,12.4700],[41.8905,12.4777],[41.8850,12.4760]]},
+ canal:{n:'大運河',p:[[45.4411,12.3215],[45.4425,12.3275],[45.4405,12.3335],[45.4380,12.3359],[45.4355,12.3320],[45.4338,12.3275],[45.4316,12.3289],[45.4308,12.3345],[45.4325,12.3400],[45.4335,12.3440]]},
+ seine:{n:'セーヌ川',p:[[48.8460,2.3650],[48.8515,2.3560],[48.8545,2.3470],[48.8570,2.3414],[48.8590,2.3340],[48.8630,2.3190],[48.8635,2.3010],[48.8600,2.2930],[48.8520,2.2820]]}
+};
+var W=[
+{k:'rome',name:'ローマ',col:'var(--rome)',riv:'tiber',days:[
+ {tab:'2/28 夜',title:'到着した夜の散歩',meta:['約3時間','歩く時間 約40分'],pts:[
+  {n:'宿（テルミニ駅周辺と仮定）',q:'Roma Termini',ll:[41.9010,12.5018],t:'19:00',d:'',nt:'荷物を置いて出発'},
+  {mv:'地下鉄A線でバルベリーニ駅へ、そこから徒歩（計 約20分）',r:1},
+  {n:'トレヴィの泉',q:'Trevi Fountain, Rome',ll:[41.9009,12.4833],t:'19:30',d:'20分',nt:'夜はライトアップされます'},
+  {mv:'徒歩 約10分'},
+  {n:'パンテオン（外観）',q:'Pantheon, Rome',ll:[41.8986,12.4769],t:'20:00',d:'15分'},
+  {mv:'徒歩 約5分'},
+  {n:'ナヴォーナ広場',q:'Piazza Navona, Rome',ll:[41.8992,12.4731],t:'20:20',d:'夕食込みで1時間半',nt:'広場のまわりで夕食。帰りはバスか、タクシー2台で約15分'}
+ ]},
+ {tab:'3/1 月',title:'ローマを1日で回る',meta:['約11時間','歩く時間 約1時間半','予約2件が必須'],pts:[
+  {n:'バチカン美術館、システィーナ礼拝堂',q:'Vatican Museums',ll:[41.9065,12.4536],t:'8:00',d:'2時間半〜3時間',nt:'宿を7:15に出て、地下鉄A線オッタヴィアーノ駅から徒歩10分。朝いちばんの予約枠で入ります'},
+  {mv:'徒歩 約15分（城壁沿いに回り込む）'},
+  {n:'サン・ピエトロ大聖堂',q:"St. Peter's Basilica",ll:[41.9022,12.4539],t:'11:00',d:'約1時間',nt:'入場は無料ですが保安検査の列があります。このあと近くで昼食（45分）'},
+  {mv:'地下鉄A線でテルミニ駅へ、B線に乗り換えてコロッセオ駅（計 約40分）',r:1},
+  {n:'コロッセオ',q:'Colosseum, Rome',ll:[41.8902,12.4922],t:'13:45',d:'1時間15分',nt:'午後の予約枠。入場券はフォロ・ロマーノと共通です'},
+  {mv:'徒歩 約5分'},
+  {n:'フォロ・ロマーノ、パラティーノの丘',q:'Roman Forum',ll:[41.8925,12.4853],t:'15:05',d:'1時間15分'},
+  {mv:'徒歩 約30分（途中でトレヴィの泉を通れます）'},
+  {n:'スペイン広場',q:'Spanish Steps, Rome',ll:[41.9060,12.4828],t:'16:50',d:'30分',nt:'階段の上からの夕方の眺めがきれいです'},
+  {mv:'徒歩 約20分'},
+  {n:'パンテオン周辺で夕食',q:'Pantheon, Rome',ll:[41.8986,12.4769],t:'17:45',d:'',nt:'疲れていたらスペイン広場の近くで夕食にして、地下鉄A線で宿へ戻ります'}
+ ]}
+]},
+{k:'venice',name:'ヴェネチア',col:'var(--venice)',riv:'canal',days:[
+ {tab:'3/2 火',title:'到着して半日で回る',meta:['現地 約6時間','歩く時間 約50分'],pts:[
+  {n:'サンタ・ルチア駅',q:'Venezia Santa Lucia railway station',ll:[45.4411,12.3210],t:'12:00',d:'荷物を置いて昼食 1時間半',nt:'ローマ・テルミニ駅を7時台に出る高速列車で約4時間。宿は駅の近くに取ります'},
+  {mv:'水上バス1番線で大運河を下る（約45分）',r:1},
+  {n:'サン・マルコ広場',q:'Piazza San Marco, Venice',ll:[45.4341,12.3388],t:'14:15',d:'1時間半',nt:'サン・マルコ寺院の中、ドゥカーレ宮殿の外観、ため息橋をまとめて見ます'},
+  {mv:'徒歩 約15分（路地を抜ける）'},
+  {n:'リアルト橋',q:'Rialto Bridge, Venice',ll:[45.4380,12.3359],t:'16:00',d:'45分',nt:'橋の上と周辺の路地。ゴンドラに乗るならここで約30分'},
+  {mv:'徒歩 約25分（迷いながら歩くのが楽しい区間）'},
+  {n:'駅周辺の宿、夕食',q:'Venezia Santa Lucia railway station',ll:[45.4425,12.3240],t:'17:30',d:'',nt:'休憩してから夕食へ'}
+ ]},
+ {tab:'3/3 朝',title:'早朝の散歩と出発',meta:['約3時間','歩く時間 約1時間'],pts:[
+  {n:'宿（駅周辺）',q:'Venezia Santa Lucia railway station',ll:[45.4411,12.3210],t:'6:30',d:'',nt:'荷物は宿に預けて出ます'},
+  {mv:'徒歩 約35分、または水上バス',},
+  {n:'サン・マルコ広場、ため息橋',q:'Piazza San Marco, Venice',ll:[45.4341,12.3388],t:'7:10',d:'40分',nt:'観光客がほとんどいない時間です'},
+  {mv:'徒歩 約15分'},
+  {n:'リアルト橋',q:'Rialto Bridge, Venice',ll:[45.4380,12.3359],t:'8:05',d:'10分'},
+  {mv:'徒歩 約20分、宿で荷物を受け取る'},
+  {n:'ローマ広場',q:'Piazzale Roma, Venice',ll:[45.4380,12.3190],t:'8:50',d:''},
+  {mv:'空港行きのバス（約25分）',r:1},
+  {n:'マルコ・ポーロ空港',off:1,t:'9:20',d:'',nt:'11時台の便を想定。パリには昼過ぎに着きます'}
+ ]}
+]},
+{k:'paris',name:'パリ',col:'var(--paris)',riv:'seine',days:[
+ {tab:'3/3 午後',title:'セーヌ川からエッフェル塔へ',meta:['約5時間','歩く時間 約40分'],pts:[
+  {n:'パリの空港に到着、宿へ',off:1,t:'13:00',d:'移動 約1時間',nt:'電車かバスで市内へ。宿に荷物を置きます'},
+  {mv:'メトロで移動（約20分）',r:1},
+  {n:'ノートルダム大聖堂',q:'Notre-Dame de Paris',ll:[48.8530,2.3499],t:'15:30',d:'45分'},
+  {mv:'徒歩 約10分（セーヌ川沿い）'},
+  {n:'ポン・ヌフ',q:'Pont Neuf, Paris',ll:[48.8570,2.3414],t:'16:25',d:'15分',nt:'パリでいちばん古い橋'},
+  {mv:'メトロで移動（約30分）',r:1},
+  {n:'トロカデロ広場',q:'Trocadéro, Paris',ll:[48.8616,2.2893],t:'17:15',d:'30分',nt:'エッフェル塔を正面から見られる場所。夕暮れの時間に合わせます'},
+  {mv:'徒歩 約10分（橋を渡る）'},
+  {n:'エッフェル塔',q:'Eiffel Tower',ll:[48.8584,2.2945],t:'17:55',d:'1時間',nt:'上るなら予約して、さらに1時間半ほど見ておきます。このあと夕食'}
+ ]},
+ {tab:'3/4 木',title:'ヴェルサイユとオルセー',meta:['約12時間（休憩込み）','電車 片道 約40分'],pts:[
+  {n:'パリ市内の駅を出発',off:1,t:'8:00',d:'',nt:'電車（RER C線）の終点がヴェルサイユです'},
+  {mv:'RER C線 約40分＋徒歩10分',r:1},
+  {n:'ヴェルサイユ宮殿',q:'Palace of Versailles',ll:[48.8049,2.1204],t:'9:00',d:'3時間〜3時間半',nt:'宮殿（鏡の間）と庭園。開館と同時の予約枠で入ります。昼食はヴェルサイユの街で'},
+  {mv:'RER C線でパリへ戻る（約45分）',r:1},
+  {n:'宿かカフェで休憩',off:1,t:'14:30',d:'2時間半'},
+  {n:'オルセー美術館',q:"Musée d'Orsay",ll:[48.8600,2.3266],t:'17:30',d:'2時間半',nt:'木曜は夜まで開いています。印象派の階から先に回ります。夕食は20時過ぎ'}
+ ]},
+ {tab:'3/5 金',title:'ルーヴルからモンマルトル、凱旋門へ',meta:['約10時間','歩く時間 約1時間'],pts:[
+  {n:'ルーヴル美術館',q:'Louvre Museum',ll:[48.8606,2.3376],t:'9:00',d:'3時間',nt:'開館と同時に入り、モナ・リザを先に見ます。このあと昼食（1時間）'},
+  {mv:'徒歩 約15分（チュイルリー公園を抜ける）'},
+  {n:'オランジュリー美術館',q:"Musée de l'Orangerie",ll:[48.8638,2.3227],t:'13:15',d:'1時間',nt:'モネの「睡蓮」の部屋'},
+  {mv:'メトロ12号線で約25分',r:1},
+  {n:'モンマルトル、サクレ・クール寺院',q:'Sacré-Cœur, Paris',ll:[48.8867,2.3431],t:'14:45',d:'1時間半',nt:'丘の上からパリを見渡せます。画家の集まるテルトル広場も近くです'},
+  {mv:'メトロ2号線で約25分',r:1},
+  {n:'凱旋門',q:'Arc de Triomphe, Paris',ll:[48.8738,2.2950],t:'16:45',d:'45分',nt:'屋上に上るならさらに30分'},
+  {mv:'徒歩 約25分（シャンゼリゼ通りを下る）'},
+  {n:'コンコルド広場',q:'Place de la Concorde, Paris',ll:[48.8656,2.3212],t:'18:00',d:'',nt:'ここで解散して夕食へ'}
+ ]}
+]},
+{k:'bcn',name:'バルセロナ',col:'var(--bcn)',days:[
+ {tab:'3/6 土',title:'到着してガウディを回る',meta:['現地 約7時間','歩く時間 約40分'],pts:[
+  {n:'バルセロナ空港に到着',off:1,t:'11:30',d:'',nt:'パリを8〜9時台に出る便を想定'},
+  {mv:'空港バス（約35分）',r:1},
+  {n:'カタルーニャ広場',q:'Plaça de Catalunya, Barcelona',ll:[41.3870,2.1700],t:'12:30',d:'荷物を置いて昼食 1時間半',nt:'宿はこの周辺が便利です'},
+  {mv:'メトロで約15分',r:1},
+  {n:'サグラダ・ファミリア',q:'Sagrada Família',ll:[41.4036,2.1744],t:'14:15',d:'1時間半',nt:'日時指定の予約が必要です'},
+  {mv:'メトロL5でディアゴナル駅へ（約10分）',r:1},
+  {n:'カサ・ミラ（外観）',q:'Casa Milà, Barcelona',ll:[41.3953,2.1619],t:'16:05',d:'10分'},
+  {mv:'徒歩 約7分（グラシア通り）'},
+  {n:'カサ・バトリョ',q:'Casa Batlló, Barcelona',ll:[41.3917,2.1650],t:'16:25',d:'1時間',nt:'中に入る場合の時間です'},
+  {mv:'徒歩 約20分（グラシア通りを下る）'},
+  {n:'ゴシック地区、大聖堂',q:'Barcelona Cathedral',ll:[41.3840,2.1762],t:'17:50',d:'1時間',nt:'路地を歩いて、そのままバルで夕食'}
+ ]},
+ {tab:'3/7 日',title:'グエル公園と試合',meta:['試合の時刻は未確定','歩く時間 約50分'],pts:[
+  {n:'カタルーニャ広場',q:'Plaça de Catalunya, Barcelona',ll:[41.3870,2.1700],t:'9:00',d:''},
+  {mv:'メトロL3でレセップス駅へ、そこから坂道を徒歩15分（計 約35分）',r:1},
+  {n:'グエル公園',q:'Park Güell, Barcelona',ll:[41.4145,2.1527],t:'9:45',d:'1時間半〜2時間',nt:'日時指定の予約が必要です。帰りは坂を下ってグラシア地区で昼食'},
+  {mv:'メトロで宿へ戻って休憩',r:1},
+  {n:'宿で休憩',off:1,t:'午後',d:'',nt:'試合の開始時刻に合わせて調整します'},
+  {mv:'メトロL3で約25分',r:1},
+  {n:'カンプ・ノウ',q:'Camp Nou, Barcelona',ll:[41.3809,2.1228],t:'開始の1時間半前',d:'試合 約2時間',nt:'帰りの駅は混むので、宿まで40分以上見ておきます'}
+ ]},
+ {tab:'3/8 月',title:'モンセラットへ日帰り',meta:['約8時間','電車 片道 約1時間半'],pts:[
+  {n:'エスパーニャ広場',q:'Plaça d\'Espanya, Barcelona',ll:[41.3750,2.1490],t:'8:30',d:'',nt:'ここの駅から列車（R5）に乗ります'},
+  {mv:'列車 約1時間＋登山鉄道 約15分',r:1},
+  {n:'モンセラット',q:'Montserrat Monastery',ll:[41.5933,1.8376],t:'10:15',d:'3時間〜3時間半',nt:'修道院、展望台、ケーブルカーで上の展望台へ。昼食は現地で'},
+  {mv:'登山鉄道と列車で戻る（約1時間半）',r:1},
+  {n:'エスパーニャ広場',q:'Plaça d\'Espanya, Barcelona',ll:[41.3750,2.1490],t:'15:30',d:''},
+  {mv:'メトロL3で約10分',r:1},
+  {n:'ボケリア市場',q:'Mercat de la Boqueria, Barcelona',ll:[41.3817,2.1716],t:'16:00',d:'45分',nt:'ランブラス通り沿い。このあとゴシック地区で最後の夕食'}
+ ]}
+]}
+];
+var sec=document.getElementById('walk'), ct=document.getElementById('ctabs'), dt=document.getElementById('dtabs'), pn=document.getElementById('wpanel');
+var ci=0, di=0;
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function map(day,city){
+  var P=day.pts.filter(function(p){return p.ll&&!p.off});
+  var VW=340,VH=236,pad=34;
+  var la=P.map(function(p){return p.ll[0]}), lo=P.map(function(p){return p.ll[1]});
+  var la0=Math.min.apply(0,la), la1=Math.max.apply(0,la), lo0=Math.min.apply(0,lo), lo1=Math.max.apply(0,lo);
+  var k=Math.cos((la0+la1)/2*Math.PI/180);
+  var sx=Math.max((lo1-lo0)*k,0.004), sy=Math.max(la1-la0,0.004);
+  var sc=Math.min((VW-pad*2)/sx,(VH-pad*2-10)/sy);
+  var ox=(VW-(lo1-lo0)*k*sc)/2, oy=(VH-10-(la1-la0)*sc)/2;
+  function xy(ll){return [ox+(ll[1]-lo0)*k*sc, oy+(la1-ll[0])*sc]}
+  var h='<svg viewBox="0 0 '+VW+' '+VH+'" role="img" aria-label="'+esc(day.title)+'のルート略図">';
+  if(city.riv){var R=RIV[city.riv], rp=R.p.map(xy);
+    h+='<path class="water" d="M'+rp.map(function(p){return p[0].toFixed(1)+' '+p[1].toFixed(1)}).join(' L')+'"/>';
+    var vis=rp.filter(function(p){return p[0]>20&&p[0]<VW-50&&p[1]>14&&p[1]<VH-24});
+    if(vis.length){var m=vis[Math.floor(vis.length/2)]; h+='<text class="wl" x="'+(m[0]+8).toFixed(1)+'" y="'+(m[1]-8).toFixed(1)+'">'+R.n+'</text>'}
+  }
+  // legs
+  var seq=[],ride=false,legs=[];
+  day.pts.forEach(function(p){ if(p.mv){ if(p.r)ride=true; return }
+    if(p.off||!p.ll){ride=true;return}
+    if(seq.length){legs.push([seq[seq.length-1],p,ride])} seq.push(p); ride=false });
+  var full='';
+  legs.forEach(function(L,i){var a=xy(L[0].ll),b=xy(L[1].ll);
+    var mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2,dx=b[0]-a[0],dy=b[1]-a[1];
+    var c=L[2]?[mx-dy*0.18,my+dx*0.18]:[mx,my];
+    var d='M'+a[0].toFixed(1)+' '+a[1].toFixed(1)+' Q'+c[0].toFixed(1)+' '+c[1].toFixed(1)+' '+b[0].toFixed(1)+' '+b[1].toFixed(1);
+    full+=(i?' ':'')+(i?d.replace(/^M[^Q]+/,''):d);
+    h+='<path class="leg '+(L[2]?'ride':'walk')+'" '+(L[2]?'':'pathLength="1" ')+'style="--i:'+i+'" d="'+d+'"/>';
+  });
+  // markers
+  var seen=[], num=0;
+  day.pts.forEach(function(p){ if(p.mv)return; num++; if(p.off||!p.ll)return;
+    var q=xy(p.ll), dup=seen.filter(function(s){return Math.abs(s[0]-q[0])<14&&Math.abs(s[1]-q[1])<14}).length;
+    seen.push(q); var x=q[0]+dup*17, y=q[1];
+    var i=seq.indexOf(p);
+    h+='<g class="mk" style="--i:'+i+'"><circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="10.5"/><text x="'+x.toFixed(1)+'" y="'+(y+4).toFixed(1)+'">'+num+'</text></g>';
+    if(!dup){var nm=p.n.split(/[、（]/)[0]; var right=x<VW*0.62; var ty=y+(y<26?24:-15);
+      h+='<text class="nm" style="--i:'+i+'" x="'+x.toFixed(1)+'" y="'+ty.toFixed(1)+'" text-anchor="'+(x<60?'start':x>VW-60?'end':'middle')+'">'+esc(nm)+'</text>'}
+  });
+  if(legs.length&&!reduce){h+='<circle class="dot" r="5"><animateMotion dur="'+Math.max(6,legs.length*1.8)+'s" begin="'+(legs.length*0.38+0.4).toFixed(1)+'s" repeatCount="indefinite" path="'+full+'"/></circle>'}
+  // scale
+  var pxkm=sc/111, opts=[0.2,0.5,1,2,5,10,20], bl=opts[0];
+  opts.forEach(function(o){if(o*pxkm<=110)bl=o});
+  var bw=bl*pxkm;
+  h+='<line class="sc" x1="12" y1="'+(VH-12)+'" x2="'+(12+bw).toFixed(1)+'" y2="'+(VH-12)+'"/><text class="sct" x="'+(18+bw).toFixed(1)+'" y="'+(VH-9)+'">'+(bl<1?(bl*1000)+'m':bl+'km')+'</text>';
+  h+='<text class="sct" x="'+(VW-12)+'" y="16" text-anchor="end">北が上</text></svg>';
+  return h;
+}
+function gurl(day){
+  var q=[]; day.pts.forEach(function(p){if(p.q&&q[q.length-1]!==p.q)q.push(p.q)});
+  if(q.length<2)return '';
+  var u='https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(q[0])+'&destination='+encodeURIComponent(q[q.length-1]);
+  if(q.length>2)u+='&waypoints='+q.slice(1,-1).map(encodeURIComponent).join('%7C');
+  return u;
+}
+function render(){
+  var c=W[ci], d=c.days[di];
+  sec.style.setProperty('--c',c.col);
+  [].forEach.call(ct.children,function(b,i){b.setAttribute('aria-selected',i===ci)});
+  dt.innerHTML=c.days.map(function(x,i){return '<button role="tab" aria-selected="'+(i===di)+'" data-i="'+i+'">'+x.tab+'</button>'}).join('');
+  var h='<h3>'+esc(d.title)+'</h3><div class="wmeta">'+d.meta.map(function(m){return '<span>'+m+'</span>'}).join('')+'</div>';
+  h+='<div class="wmap">'+map(d,c)+'</div><div class="wkey"><span><i></i>徒歩</span><span><i class="r"></i>電車、バス、船</span><span>位置関係を示す略図です</span></div>';
+  var g=gurl(d); if(g)h+='<a class="gmap" href="'+g+'" target="_blank" rel="noopener">Googleマップで実際の道を見る</a>';
+  h+='<ol class="wsteps">'; var n=0,i=0;
+  d.pts.forEach(function(p){ i++;
+    if(p.mv){h+='<li class="mv" style="--i:'+i+'"><span>'+esc(p.mv)+'</span></li>';return}
+    n++; h+='<li style="--i:'+i+'"><div class="n'+(p.off?' off':'')+'">'+n+'</div><div class="b"><span class="tm">'+p.t+'</span><b>'+esc(p.n)+'</b>'+(p.d?' <span class="du">'+p.d+'</span>':'')+(p.nt?'<div class="nt">'+esc(p.nt)+'</div>':'')+'</div></li>';
+  });
+  h+='</ol>';
+  pn.innerHTML=h;
+}
+ct.innerHTML=W.map(function(c,i){return '<button role="tab" style="--k:'+c.col+'" data-i="'+i+'">'+c.name+'</button>'}).join('');
+ct.addEventListener('click',function(e){var b=e.target.closest('button'); if(!b)return; ci=+b.dataset.i; di=0; render()});
+dt.addEventListener('click',function(e){var b=e.target.closest('button'); if(!b)return; di=+b.dataset.i; render()});
+render();
+})();
+</script>
+<a id="lib-back" href="../../index.html" style="position:fixed;left:12px;bottom:14px;z-index:9999;padding:8px 14px;border-radius:99px;background:rgba(20,22,40,.86);color:#fff;font:700 13px/1 system-ui,sans-serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ライブラリ</a>
+</body>
+</html>

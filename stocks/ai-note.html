@@ -1,0 +1,938 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI株ノート</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F0F2F6; --surface:#FFFFFF; --ink:#17202B; --muted:#66717F; --rule:#DCE1E8;
+  --this:#08707C; --this-soft:#DCEFF1; --next:#9A5B00; --next-soft:#F7E9D3;
+  --done:#6E7886; --done-soft:#E7EAEF; --later:#5B4A8C; --later-soft:#EAE5F4;
+  --rail-top:#26306B; --rail-bot:#8FC1D4;
+  color-scheme:light; box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E131A; --surface:#161D27; --ink:#E6EBF2; --muted:#9AA6B6; --rule:#2A3441;
+    --this:#45C3CF; --this-soft:#123238; --next:#E3A445; --next-soft:#3A2B14;
+    --done:#97A1AE; --done-soft:#232B36; --later:#B4A4E6; --later-soft:#261F3A;
+    --rail-top:#7C8BE0; --rail-bot:#2C5466; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E131A; --surface:#161D27; --ink:#E6EBF2; --muted:#9AA6B6; --rule:#2A3441;
+  --this:#45C3CF; --this-soft:#123238; --next:#E3A445; --next-soft:#3A2B14;
+  --done:#97A1AE; --done-soft:#232B36; --later:#B4A4E6; --later-soft:#261F3A;
+  --rail-top:#7C8BE0; --rail-bot:#2C5466; color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 60px);scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic",Meiryo,system-ui,sans-serif;font-size:15.5px;line-height:1.7;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+a{color:var(--this)}
+.tk{font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;font-weight:700;letter-spacing:.02em}
+.wrap{max-width:980px;margin:0 auto;padding:0 18px}
+
+/* header */
+.hero{padding:26px 0 16px}
+.hero h1{margin:0;font-size:clamp(26px,5vw,34px);line-height:1.25}
+.hero h1::after{content:"";display:block;width:56px;height:4px;border-radius:2px;margin-top:10px;background:linear-gradient(90deg,var(--rail-top),var(--this),var(--next),var(--rail-top));background-size:300% 100%}
+.hero p{margin:10px 0 0;color:var(--muted);font-size:13.5px}
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--rule)}
+nav.toc .wrap{display:flex;gap:2px;overflow-x:auto;padding:8px 18px;scrollbar-width:none}
+nav.toc .wrap::-webkit-scrollbar{display:none}
+nav.toc a{flex:0 0 auto;text-decoration:none;color:var(--ink);font-size:13.5px;padding:6px 11px;border-radius:7px;transition:background-color .2s,color .2s}
+nav.toc a.on{background:var(--this-soft);color:var(--this);font-weight:700}
+nav.toc .bar{position:absolute;left:0;bottom:-1px;height:2px;width:100%;background:linear-gradient(90deg,var(--rail-top),var(--this),var(--next));transform-origin:0 50%;transform:scaleX(0);pointer-events:none}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--this);outline-offset:2px}
+
+main{padding:4px 0 60px}
+section.block{margin-top:40px}
+section.block>h2{font-size:22px;margin:0 0 4px}
+section.block>.lead{margin:0 0 14px;color:var(--muted);font-size:14px}
+.card-box{background:var(--surface);border:1px solid var(--rule);border-radius:12px}
+
+/* ===== calendar ===== */
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted);margin:0 0 12px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.sw{width:11px;height:11px;border-radius:3px;display:inline-block}
+.week{background:var(--surface);border:1px solid var(--rule);border-radius:12px;margin-bottom:14px;overflow:hidden}
+.week-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:11px 16px;border-bottom:1px solid var(--rule)}
+.week-h h3{margin:0;font-size:16px}
+.week-h small{color:var(--muted);font-size:12px}
+.week.this .week-h{border-left:5px solid var(--this)}
+.week.next .week-h{border-left:5px solid var(--next)}
+.days{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+.day{padding:12px;border-right:1px solid var(--rule);min-width:0;transition:opacity .3s}
+.day:last-child{border-right:0}
+.day.past{opacity:.45}
+.day.today{background:var(--bg)}
+.day-h{font-size:12.5px;color:var(--muted);margin-bottom:8px;display:flex;align-items:baseline;gap:6px}
+.day-h b{color:var(--ink);font-size:16px}
+.day-h .now{font-size:10.5px;font-weight:700;color:var(--this);background:var(--this-soft);padding:0 6px;border-radius:4px;margin-left:auto}
+.slot{margin-bottom:10px}
+.slot:last-child{margin-bottom:0}
+.slot-l{font-size:11.5px;color:var(--muted);margin-bottom:4px}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:15px;padding:2px 9px;border-radius:6px;line-height:1.5;cursor:pointer;border:0;color:inherit;background:var(--done-soft);transition:transform .15s,box-shadow .15s}
+.chip:hover{transform:translateY(-2px);box-shadow:0 3px 10px rgba(0,0,0,.12)}
+.chip:active{transform:scale(.95)}
+.week.this .chip{background:var(--this-soft)}
+.week.next .chip{background:var(--next-soft)}
+.later .chip{background:var(--later-soft)}
+.chip.est::after{content:"予定";font-family:"Noto Sans JP",sans-serif;font-size:10px;font-weight:500;color:var(--muted)}
+.event{display:block;font-size:12.5px;font-weight:700;padding:5px 9px;border-radius:6px;background:var(--done-soft);margin-bottom:8px;line-height:1.45}
+.empty{font-size:12.5px;color:var(--muted)}
+.strip{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.strip .box{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:12px 16px}
+.strip h4{margin:0 0 6px;font-size:14px}
+.strip ul{margin:0;padding:0;list-style:none}
+.strip li{display:flex;gap:10px;align-items:baseline;padding:4px 0;font-size:13.5px;border-bottom:1px dashed var(--rule)}
+.strip li:last-child{border-bottom:0}
+.strip li .d{flex:0 0 52px;color:var(--muted)}
+.strip li .m{color:var(--muted);font-size:12.5px}
+
+/* ===== NBIS impact ===== */
+.st{font-size:15px;letter-spacing:1px;color:var(--rule);white-space:nowrap}
+.st b{color:var(--next);font-weight:400}
+.imp{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px;margin-bottom:14px}
+.imp .panel{margin:0}
+.hd{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.hd .tk{font-size:22px;line-height:1.1}
+.hd .when{font-size:12.5px;color:var(--muted)}
+.hd .st{margin-left:auto}
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:14px 16px;margin-bottom:12px;transition:transform .25s,box-shadow .25s}
+.panel h3{margin:0 0 8px;font-size:16px}
+.panel p{margin:0 0 6px}
+.panel p:last-child{margin-bottom:0}
+.pm{display:grid;grid-template-columns:auto 1fr;gap:4px 8px;font-size:13.5px;margin-top:6px}
+.pm b.p{color:var(--this)}
+.pm b.m{color:var(--next)}
+
+/* ===== map ===== */
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px}
+.filters button{font:inherit;font-size:13px;padding:6px 12px;border-radius:999px;border:1px solid var(--rule);background:var(--surface);color:var(--ink);cursor:pointer;transition:background-color .2s,color .2s,border-color .2s,transform .12s}
+.filters button:active{transform:scale(.96)}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.chain{position:relative;padding-left:30px}
+.chain::before{content:"";position:absolute;left:10px;top:6px;bottom:6px;width:6px;border-radius:3px;background:linear-gradient(180deg,var(--rail-top),var(--rail-bot))}
+.chain::after{content:"";position:absolute;left:10px;top:6px;bottom:6px;width:6px;border-radius:3px;pointer-events:none;background-image:radial-gradient(circle,rgba(255,255,255,.95) 0 1.6px,transparent 2.2px);background-size:6px 36px;opacity:.85}
+.layer{position:relative;background:var(--surface);border:1px solid var(--rule);border-radius:12px;margin-bottom:10px}
+.layer::before{content:"";position:absolute;left:-24px;top:19px;width:14px;height:14px;border-radius:50%;background:var(--surface);border:3px solid var(--dot,var(--rail-top))}
+.layer>summary{list-style:none;cursor:pointer;padding:12px 16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+.layer>summary::-webkit-details-marker{display:none}
+.layer>summary .nm{font-weight:700;font-size:16px;transition:color .2s}
+.layer>summary .nm::after{content:"";display:inline-block;width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg);margin-left:10px;vertical-align:2px;transition:transform .25s}
+.layer[open]>summary .nm::after{transform:rotate(45deg)}
+.layer>summary:hover .nm{color:var(--this)}
+.layer>summary .tks{font-size:14px;color:var(--muted);margin-left:auto}
+.layer[open]>summary{border-bottom:1px solid var(--rule)}
+.layer .how{margin:0;padding:10px 16px;font-size:13.5px;background:var(--bg);border-bottom:1px solid var(--rule)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+.card{padding:12px 16px;border-top:1px solid var(--rule);border-right:1px solid var(--rule);min-width:0;transition:background-color .2s}
+.card:hover{background:var(--bg)}
+.card .row{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.card .tk{font-size:22px;line-height:1.1;transition:color .2s}
+.card:hover .tk{color:var(--this)}
+.card .co{font-size:12.5px;color:var(--muted)}
+.card .role{margin:4px 0 0;font-size:13.5px;line-height:1.6}
+.card .diff{margin:3px 0 0;font-size:12.5px;color:var(--muted);line-height:1.55}
+.card .nb{margin:7px 0 0;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.card .nb .st{font-size:13px}
+.card .nb .why{flex-basis:100%;line-height:1.5}
+.card .nb.self{color:var(--this);font-weight:700}
+.badge{font-size:11.5px;font-weight:700;padding:1px 7px;border-radius:4px;white-space:nowrap}
+.badge.this{background:var(--this-soft);color:var(--this)}
+.badge.next{background:var(--next-soft);color:var(--next)}
+.badge.done{background:var(--done-soft);color:var(--done)}
+.badge.later{background:var(--later-soft);color:var(--later)}
+.card.hl{animation:flash 1.6s ease-out}
+@keyframes flash{0%{background:var(--this-soft)}100%{background:transparent}}
+.hidden{display:none!important}
+.nomatch{display:none;padding:14px 16px;font-size:13px;color:var(--muted)}
+
+/* ===== memo (collapsible) ===== */
+.memo{background:var(--surface);border:1px solid var(--rule);border-radius:12px;margin-bottom:10px}
+.memo>summary{list-style:none;cursor:pointer;padding:13px 16px;font-weight:700;font-size:16px;display:flex;align-items:center;gap:10px}
+.memo>summary::-webkit-details-marker{display:none}
+.memo>summary::after{content:"";width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg);margin-left:auto;transition:transform .25s}
+.memo[open]>summary::after{transform:rotate(45deg)}
+.memo>summary small{font-weight:400;color:var(--muted);font-size:12.5px}
+.memo .body{padding:0 16px 14px;border-top:1px solid var(--rule)}
+.memo .body>p{margin:12px 0 8px}
+.memo .body>p.one{font-weight:700}
+.tbl{overflow-x:auto;border:1px solid var(--rule);border-radius:10px;margin:10px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px;line-height:1.55}
+th,td{padding:8px 11px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+th{background:var(--bg);font-weight:700;font-size:12.5px;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.k{font-weight:700;white-space:nowrap}
+tbody tr{transition:background-color .15s}
+tbody tr:hover{background:var(--bg)}
+ul.tight{margin:6px 0 0;padding-left:1.2em}
+ul.tight li{margin:3px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rank{counter-reset:s;margin:0;padding:0;list-style:none}
+.rank li{counter-increment:s;position:relative;padding:8px 0 8px 34px;border-bottom:1px dashed var(--rule)}
+.rank li:last-child{border-bottom:0}
+.rank li::before{content:counter(s);position:absolute;left:0;top:10px;width:24px;height:24px;border-radius:50%;background:var(--ink);color:var(--surface);font-size:12.5px;display:grid;place-items:center;font-weight:700}
+.rank li b{display:block}
+.rank li span{font-size:13.5px;color:var(--muted)}
+.note{font-size:12.5px;color:var(--muted);margin:8px 0 0}
+footer{padding:16px 0 40px;font-size:12.5px;color:var(--muted)}
+footer details summary{cursor:pointer}
+footer ul{padding-left:1.2em;margin:6px 0 0}
+
+/* ===== motion ===== */
+@media (prefers-reduced-motion: no-preference){
+  .hero h1{animation:rise .8s cubic-bezier(.2,.7,.2,1) both}
+  .hero p{animation:rise .8s .12s cubic-bezier(.2,.7,.2,1) both}
+  .hero h1::after{animation:grow .9s .3s cubic-bezier(.2,.7,.2,1) both,sheen 5s 1.2s linear infinite}
+  .rv{opacity:0;transform:translateY(16px);transition:opacity .55s cubic-bezier(.2,.7,.2,1),transform .55s cubic-bezier(.2,.7,.2,1);transition-delay:var(--d,0ms)}
+  .rv.in{opacity:1;transform:none}
+  .week.rv:not(.in) .chip{opacity:0}
+  .week.rv.in .chip{animation:pop .45s cubic-bezier(.3,1.5,.5,1) both;animation-delay:calc(var(--i,0) * 35ms + 160ms)}
+  .chain::after{animation:flowup 1.8s linear infinite}
+  .layer[open]>.how,.layer[open]>.cards,.memo[open]>.body{animation:unfold .4s cubic-bezier(.2,.7,.2,1) both}
+  .layer[open]::before{animation:pulse 2.4s ease-out infinite}
+  .rv.in .st b,.layer[open] .st b{display:inline-block;animation:starpop .6s .25s cubic-bezier(.3,1.5,.5,1) both}
+  .card.fi{animation:unfold .35s both}
+  .panel:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(23,32,43,.08)}
+}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes grow{from{width:0;opacity:0}to{width:56px;opacity:1}}
+@keyframes sheen{to{background-position:-300% 0}}
+@keyframes pop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
+@keyframes flowup{from{background-position:0 36px}to{background-position:0 0}}
+@keyframes unfold{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+@keyframes starpop{0%{opacity:0;transform:scale(.4)}60%{opacity:1;transform:scale(1.18)}100%{opacity:1;transform:none}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(8,112,124,.35)}70%{box-shadow:0 0 0 9px rgba(8,112,124,0)}100%{box-shadow:0 0 0 0 rgba(8,112,124,0)}}
+
+@media (max-width:820px){
+  .days{grid-template-columns:1fr}
+  .day{border-right:0;border-bottom:1px solid var(--rule);display:grid;grid-template-columns:76px 1fr;gap:4px 10px}
+  .day:last-child{border-bottom:0}
+  .day-h{margin:0;flex-direction:column;align-items:flex-start;gap:2px}
+  .day-h .now{margin-left:0}
+  .strip,.grid2{grid-template-columns:1fr}
+  .layer>summary .tks{margin-left:0;flex-basis:100%}
+}
+
+/* ===== v3 motion additions ===== */
+.nextev{display:inline-flex;align-items:center;gap:10px;margin-top:12px;padding:8px 14px;border-radius:999px;background:var(--surface);border:1px solid var(--rule);font-size:13px}
+.nextev .dot{width:8px;height:8px;border-radius:50%;background:var(--this);box-shadow:0 0 0 0 var(--this)}
+.nextev .nl{color:var(--muted)}
+.nextev b{font-weight:700}
+.nextev .cd{font-size:16px;color:var(--this);min-width:7ch;text-align:right;font-variant-numeric:tabular-nums}
+.theme{position:absolute;right:16px;top:calc(env(safe-area-inset-top,0px) + 14px);width:40px;height:40px;border-radius:50%;border:1px solid var(--rule);background:var(--surface);cursor:pointer;display:grid;place-items:center;overflow:hidden;z-index:6;transition:transform .2s,box-shadow .2s}
+.theme:hover{transform:rotate(15deg) scale(1.06);box-shadow:0 6px 16px rgba(0,0,0,.12)}
+.theme span{position:absolute;font-size:18px;transition:transform .5s var(--ease,cubic-bezier(.2,.7,.2,1)),opacity .4s}
+.theme .moon{transform:translateY(24px) rotate(-40deg);opacity:0}
+:root[data-theme="dark"] .theme .sun{transform:translateY(-24px) rotate(40deg);opacity:0}
+:root[data-theme="dark"] .theme .moon{transform:none;opacity:1}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .theme .sun{transform:translateY(-24px) rotate(40deg);opacity:0}:root:not([data-theme="light"]) .theme .moon{transform:none;opacity:1}}
+header{position:relative}
+.totop{position:fixed;right:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);width:44px;height:44px;border-radius:50%;border:0;background:var(--ink);color:var(--surface);font-size:18px;cursor:pointer;opacity:0;transform:translateY(14px) scale(.9);pointer-events:none;transition:opacity .3s,transform .3s;z-index:6;box-shadow:0 8px 20px rgba(0,0,0,.18)}
+.totop.show{opacity:1;transform:none;pointer-events:auto}
+.slot{position:relative;border-radius:8px;transition:background-color .3s}
+.slot.upnext{background:var(--this-soft);padding:6px 8px;margin-left:-8px;margin-right:-8px}
+.slot.upnext .slot-l::before{content:"次 ";color:var(--this);font-weight:700}
+.slot.past{opacity:.5}
+.event.past{opacity:.5}
+.day.today{box-shadow:inset 0 0 0 2px var(--this-soft)}
+.card{position:relative}
+.card::after{content:"";position:absolute;inset:0;background:radial-gradient(220px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.16),transparent 60%);opacity:0;transition:opacity .3s;pointer-events:none}
+.card:hover::after{opacity:1}
+.panel{position:relative;overflow:hidden}
+.panel::after{content:"";position:absolute;inset:0;background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.14),transparent 60%);opacity:0;transition:opacity .3s;pointer-events:none}
+.panel:hover::after{opacity:1}
+.chip.est::after{animation:none}
+@media (prefers-reduced-motion: no-preference){
+  .nextev .dot{animation:ping 1.8s ease-out infinite}
+  .slot.upnext{animation:glow 2.4s ease-in-out infinite}
+  .week.rv.in .day.today .day-h b{animation:popin .5s cubic-bezier(.3,1.5,.5,1) both}
+  .card.hl{animation:flash 1.6s ease-out}
+  .strip li{opacity:0;transform:translateX(-8px);transition:opacity .5s,transform .5s}
+  .strip .box.in li{opacity:1;transform:none}
+  .memo[open]>.body .tbl,.memo[open]>.body ul,.memo[open]>.body p{animation:unfold .45s cubic-bezier(.2,.7,.2,1) both}
+  .layer[open]>.cards .card{animation:cardin .45s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--ci,0) * 40ms)}
+}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(8,112,124,.5)}100%{box-shadow:0 0 0 10px transparent}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(8,112,124,0)}50%{box-shadow:0 0 0 4px rgba(8,112,124,.18)}}
+@keyframes popin{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@keyframes cardin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<header>
+  <button class="theme" id="theme" type="button" aria-label="ライト／ダーク切替"><span class="sun">☀</span><span class="moon">☾</span></button>
+  <div class="wrap hero">
+    <h1>AI株ノート</h1>
+    <p>決算日程・銘柄マップ・相場メモ。2026年11月16日更新。米国上場のティッカーで表示。投資助言ではありません。</p>
+    <div class="nextev" id="next" aria-live="polite"><span class="dot"></span><span class="nl">次のイベント</span><b id="next-name">—</b><span class="cd num" id="next-cd">--:--:--</span></div>
+  </div>
+</header>
+<nav class="toc" aria-label="目次">
+  <span class="bar" aria-hidden="true"></span>
+  <div class="wrap">
+    <a href="#calendar">決算カレンダー</a>
+    <a href="#nbis">NBIS影響度</a>
+    <a href="#map">業界マップ</a>
+    <a href="#howto">決算の見方</a>
+    <a href="#memo">相場メモ</a>
+    <a href="#terms">用語</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ================= CALENDAR ================= -->
+<section class="block" id="calendar">
+  <h2>決算カレンダー</h2>
+  <p class="lead">ティッカーを押すと業界マップに飛ぶ。寄り前の発表は日本の夜、引け後は翌朝。</p>
+  <div class="legend">
+    <span><i class="sw" style="background:var(--this)"></i>今週</span>
+        <span><i class="sw" style="background:var(--done)"></i>発表済み</span>
+    <span><i class="sw" style="background:var(--later)"></i>その先</span>
+  </div>
+
+  <div class="week this">
+    <div class="week-h"><h3>今週 11/16〜11/20</h3><small>冬時間：時差14時間。日付は米国、矢印の先が日本時間</small></div>
+    <div class="days">
+      <div class="day" data-date="2026-11-16"><div class="day-h"><b>11/16</b>月</div>
+        <div>
+          <div class="slot" data-ts="2026-11-16T21:00+09:00"><div class="slot-l">寄り前 → 11/16 夜</div><div class="chips" data-t="TSN BIDU* XPEV*"></div></div>
+          <span class="event" data-ts="2026-11-16T22:30+09:00">NY連銀製造業指数 → 11/16 22:30（予想19.4、前回25.5）</span>
+          <span class="event" data-ts="2026-11-17T02:00+09:00">ウォーシュFRB議長の講演 → 11/17 2:00（利上げ姿勢に注目）</span>
+        </div>
+      </div>
+      <div class="day" data-date="2026-11-17"><div class="day-h"><b>11/17</b>火</div>
+        <div>
+          <div class="slot" data-ts="2026-11-17T21:00+09:00"><div class="slot-l">寄り前 → 11/17 夜</div><div class="chips" data-t="HD DIS"></div></div>
+          <span class="event" data-ts="2026-11-17T22:30+09:00">10月小売売上高 → 11/17 22:30（前回+0.8%）</span>
+          <span class="event" data-ts="2026-11-17T23:15+09:00">鉱工業生産 → 11/17 23:15</span>
+          <div class="slot" data-ts="2026-11-18T06:20+09:00"><div class="slot-l">引け後 → 11/18 朝6:20ごろ（7:00説明会）今週最大</div><div class="chips" data-t="NVDA"></div></div>
+        </div>
+      </div>
+      <div class="day" data-date="2026-11-18"><div class="day-h"><b>11/18</b>水</div>
+        <div>
+          <div class="slot" data-ts="2026-11-18T21:00+09:00"><div class="slot-l">寄り前 → 11/18 夜</div><div class="chips" data-t="TGT TJX LOW"></div></div>
+          <span class="event" data-ts="2026-11-18T22:30+09:00">住宅着工・建設許可 → 11/18 22:30</span>
+          <span class="event" data-ts="2026-11-19T04:00+09:00">FOMC議事要旨 → 11/19 4:00（利上げ派がどれだけいたか）</span>
+          <div class="slot" data-ts="2026-11-19T06:05+09:00"><div class="slot-l">引け後 → 11/19 朝</div><div class="chips" data-t="PANW"></div></div>
+        </div>
+      </div>
+      <div class="day" data-date="2026-11-19"><div class="day-h"><b>11/19</b>木</div>
+        <div>
+          <div class="slot" data-ts="2026-11-19T21:00+09:00"><div class="slot-l">寄り前 → 11/19 夜</div><div class="chips" data-t="WMT PDD* BABA*"></div></div>
+          <span class="event" data-ts="2026-11-19T22:30+09:00">新規失業保険・フィラデルフィア連銀指数 → 11/19 22:30</span>
+          <span class="event" data-ts="2026-11-19T23:30+09:00">Anthropicの上場予定日（報道ベース）／APEC首脳会議・米中会談</span>
+          <div class="slot" data-ts="2026-11-20T06:05+09:00"><div class="slot-l">引け後 → 11/20 朝</div><div class="chips" data-t="INTU ROST KEYS"></div></div>
+        </div>
+      </div>
+      <div class="day" data-date="2026-11-20"><div class="day-h"><b>11/20</b>金</div>
+        <div>
+          <span class="event" data-ts="2026-11-20T23:30+09:00">オプションの月次満期（値動きが荒くなりやすい）</span>
+          <span class="event" data-ts="2026-11-21T00:00+09:00">ミシガン大消費者信頼感（確報）→ 11/21 0:00（速報51.0）</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="strip">
+    <div class="box">
+      <h4>最近の発表済み</h4>
+      <ul>
+        <li><span class="d tk">11/13</span><span class="m">S&amp;P500 −0.38%・ナスダック100 −1.19%。AMD約−9%、AVGO約−5%（週間ではS&amp;P500 +2.5%）</span></li>
+        <li><span class="d tk">11/12</span><span class="chips" data-t="NVDA"></span><span class="m">フアンCEOが辞任、クレスCFOが暫定CEO。週間−12.8%で時価総額4兆ドル割れ</span></li>
+        <li><span class="d tk">11/12</span><span class="chips" data-t="NBIS"></span><span class="m">売上9.81億ドルで予想超え。2027年の設備投資400〜450億ドルが重く、上ヒゲ</span></li>
+        <li><span class="d tk">11/10</span><span class="chips" data-t="CRWV"></span><span class="m">売上36.6億ドル（+168%）、受注残1,325億ドル、通期見通し引き上げ。翌々日に40億ドル調達報道で下落</span></li>
+        <li><span class="d tk">11/10</span><span class="m">10月CPI +0.4%・コア+0.3%で強め。12月の利上げ観測が強まる</span></li>
+        <li><span class="d tk">11/5</span><span class="m">ナスダック−5.5%・S&amp;P500−4.4%（民主が上下両院を獲得）</span></li>
+      </ul>
+    </div>
+    <div class="box later">
+      <h4>その先</h4>
+      <ul>
+        <li><span class="d tk">11/24</span><span class="chips" data-t="DELL* ADI* ZS* HPQ*"></span><span class="m">AIサーバーの温度感はDELL</span></li>
+        <li><span class="d tk">11/26</span><span class="m">感謝祭で休場。11/27は日本時間 翌3:00で早じまい</span></li>
+        <li><span class="d tk">12/9</span><span class="m">FOMC（利上げ有力。0.5%の利上げも視野）</span></li>
+        <li><span class="d tk">12/11</span><span class="m">政府予算の期限（民主の議会で政府閉鎖リスク）</span></li>
+      </ul>
+    </div>
+  </div>
+  <p class="note">「予定」は会社未発表の見込み日。</p>
+</section>
+
+<!-- ================= NBIS IMPACT ================= -->
+<section class="block" id="nbis">
+  <h2>NBISへの影響度</h2>
+  <p class="lead">星が多いほどNBISに効きやすい（筆者の目安）。一番効くのはお客さん（MSFT・META）と同業（CRWV・IREN）。</p>
+  <div class="imp">
+    <div class="panel">
+      <div class="hd"><span class="tk">MSFT</span><span class="when">10/28 引け後</span><span class="st"><b>★★★★★</b></span></div>
+      <p>最大級の顧客（最大194億ドル）。Azureの「設備が足りない」が続くほど、外から借りる需要も続く。</p>
+      <div class="pm"><b class="p">＋</b><span>Azure 45%以上、容量不足、外部調達の継続</span><b class="m">−</b><span>減速、投資抑制、「自前で足りる」発言</span></div>
+    </div>
+    <div class="panel">
+      <div class="hd"><span class="tk">CRWV</span><span class="when">11/10 発表済み</span><span class="st"><b>★★★★★</b></span></div>
+      <p>同業最大手。決算は良かった（受注残1,325億ドル）が、直後の40億ドル調達報道で下落。調達のたびに売られる流れはNBISにも当てはまる。</p>
+      <div class="pm"><b class="p">＋</b><span>受注拡大、良い条件での調達</span><b class="m">−</b><span>資金繰り不安、増資による希薄化</span></div>
+    </div>
+    <div class="panel">
+      <div class="hd"><span class="tk">GOOGL</span><span class="when">10/28 引け後</span><span class="st"><b>★★★★</b>★</span></div>
+      <p>需要の温度計であり、TPU外販ではライバル。</p>
+      <div class="pm"><b class="p">＋</b><span>Google Cloud加速、投資継続</span><b class="m">−</b><span>TPU外販の急拡大、投資の慎重化</span></div>
+    </div>
+    <div class="panel">
+      <div class="hd"><span class="tk">IREN</span><span class="when">11/5 引け後</span><span class="st"><b>★★★★</b>★</span></div>
+      <p>同業。MSFTが顧客という共通点があり、資金調達と単価の話はNBISにも当てはまる。</p>
+      <div class="pm"><b class="p">＋</b><span>受注・単価の上昇、調達が順調</span><b class="m">−</b><span>資金不安、稼働の遅れ</span></div>
+    </div>
+    <div class="panel">
+      <div class="hd"><span class="tk">NVDA</span><span class="when">11/17 引け後</span><span class="st"><b>★★★★</b>★</span></div>
+      <p>GPUの供給元で出資者。CEO辞任後の初決算。新型GPU（Vera Rubin）の出荷時期と、他社への保証（推計4,000億ドル）の扱いがネオクラウドの資金繰りに直結。</p>
+      <div class="pm"><b class="p">＋</b><span>需要の強さ、出荷が予定通り、新体制の方針が変わらない</span><b class="m">−</b><span>出荷遅延、出資・保証の見直し、後任が決まらない</span></div>
+    </div>
+    <div class="panel">
+      <div class="hd"><span>FOMC</span><span class="when">次回 12/9</span><span class="st"><b>★★★★</b>★</span></div>
+      <p>借金と転換社債で設備を作るネオクラウドは金利に敏感。CPIが強く、12月は0.5%の利上げも視野。今週は議長講演（11/17 2:00）と議事要旨（11/19 4:00）。</p>
+      <div class="pm"><b class="p">＋</b><span>利上げに慎重、長期金利の低下</span><b class="m">−</b><span>連続利上げの示唆</span></div>
+    </div>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>銘柄</th><th>影響度</th><th>NBISとの関係</th></tr></thead>
+    <tbody>
+      <tr><td class="tk">AMZN</td><td><span class="st"><b>★★★</b>★★</span></td><td>顧客ではないが、大手の投資の方向性とAWSの容量不足は業界全体の需要サイン</td></tr>
+      <tr><td class="tk">META</td><td><span class="st"><b>★★★★★</b></span></td><td>大口顧客（最大約270億ドル）。10/21発表済み。増資で投資継続＝需要面はプラス</td></tr>
+      <tr><td class="tk">PLTR</td><td><span class="st"><b>★★</b>★★★</span></td><td>提携先。ソブリンAI需要のコメントに注目</td></tr>
+      <tr><td class="tk">SKHY・SNDK</td><td><span class="st"><b>★★</b>★★★</span></td><td>メモリ不足・値上がりはサーバーのコストと納期に響く</td></tr>
+      <tr><td class="tk">AMD・SMCI</td><td><span class="st"><b>★★</b>★★★</span></td><td>GPU・AIサーバー需要の温度感</td></tr>
+      <tr><td class="tk">VRT・GEV・ETN</td><td><span class="st"><b>★★</b>★★★</span></td><td>電力・冷却の供給状況＝データセンター建設のペース</td></tr>
+      <tr><td class="tk">EQIX・DLR・ANET・CLS・WULF</td><td><span class="st"><b>★★</b>★★★</span></td><td>データセンター需給、大手の投資の勢い、同業の資金調達</td></tr>
+      <tr><td class="tk">その他</td><td><span class="st"><b>★</b>★★★★</span></td><td>直接の関係は薄い。AI全体の雰囲気として参考</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">NBISは値動きが大きいので、星が少なくてもAI全体が大きく動くきっかけになれば連動しやすい。</p>
+</section>
+
+<!-- ================= MAP ================= -->
+<section class="block" id="map">
+  <h2>AI業界マップ</h2>
+  <p class="lead">上がものづくり、下がAIを使う側。お金は下から上へ流れる。下の誰かが投資を絞ると、上の全部に響く。</p>
+  <div class="filters" role="group" aria-label="絞り込み">
+    <button type="button" data-f="all" aria-pressed="true">すべて</button>
+    <button type="button" data-f="this" aria-pressed="false">今週決算</button>
+    <button type="button" data-f="next" aria-pressed="false">来週決算</button>
+    <button type="button" data-f="nb" aria-pressed="false">NBISに効く ★4以上</button>
+    <button type="button" data-f="open" aria-pressed="false">全部ひらく</button>
+  </div>
+  <div class="chain" id="chain"></div>
+</section>
+
+<!-- ================= HOWTO ================= -->
+<section class="block" id="howto">
+  <h2>決算の見方</h2>
+  <p class="lead">今月の決算で市場が反応した順。株価は「良いか悪いか」ではなく「予想と比べてどうか」で動く。</p>
+  <div class="panel">
+    <ol class="rank">
+      <li><b>来期・来年の見通し</b><span>市場予想を超えたか。CLSは2027年見通しが予想を12%上回って急騰、GLW（7月）は見通しが弱くて12%安</span></li>
+      <li><b>フリーキャッシュフロー（FCF）とその理由</b><span>プラスか。減ったなら「将来の注文のため」と説明できるか。Meta・BEは売られ、CLSは許された</span></li>
+      <li><b>お金の集め方</b><span>増資・借金の有無と規模。Meta 350億ドル増資、CLS株式発行、GLWの20億ドルATM</span></li>
+      <li><b>大口顧客の偏り</b><span>依存度と変化。BEはOracleの通知で売られた。CLSは上位3社で売上の約3分の2</span></li>
+      <li><b>需要の裏付け</b><span>受注残、前払い金、長期契約。「供給が追いつかない」は良くも悪くも効く（LRCX）</span></li>
+      <li><b>予想との差の大きさ</b><span>市場予想が会社見通しの上限にあるなら、見通し通りでは不合格</span></li>
+    </ol>
+    <p class="note">時間外の値動きに飛びつかない（Metaは時間外+4%→翌日−5.7%）。発表日の地合いも見る。</p>
+  </div>
+
+  <div class="grid2">
+    <div class="panel">
+      <h3>大手クラウド決算の基準（10/28〜29）</h3>
+      <div class="tbl"><table>
+        <thead><tr><th></th><th>MSFT</th><th>GOOGL</th><th>AMZN</th></tr></thead>
+        <tbody>
+          <tr><td class="k">クラウド</td><td>Azure</td><td>Google Cloud</td><td>AWS</td></tr>
+          <tr><td class="k">前回の伸び</td><td>43%</td><td>82%</td><td>37%</td></tr>
+          <tr><td class="k">今回の期待</td><td>約45%</td><td>約91%</td><td>約38%</td></tr>
+          <tr><td class="k">2026年設備投資</td><td>約1,750億ドル</td><td>1,950〜2,050億ドル</td><td>約2,200億ドル</td></tr>
+        </tbody>
+      </table></div>
+      <div class="pm"><b class="p">＋</b><span>伸び率の加速、「設備が足りない」、受注残の増加</span><b class="m">−</b><span>減速、投資だけ増えてFCF悪化、投資削減（上流に悪材料）、自社チップの強調</span></div>
+    </div>
+    <div class="panel">
+      <h3>GLW 採点表（10点満点）</h3>
+      <div class="tbl"><table>
+        <tbody>
+          <tr><td class="k">10〜12月期の見通し</td><td>3点</td><td>市場予想を上回るか</td></tr>
+          <tr><td class="k">FCF</td><td>2点</td><td>プラスか、減った理由</td></tr>
+          <tr><td class="k">ATM（株式発行）</td><td>2点</td><td>売った量と今後の方針</td></tr>
+          <tr><td class="k">今期の実績</td><td>2点</td><td>EPS 0.89ドル超、売上50億ドル超</td></tr>
+          <tr><td class="k">光通信・太陽光</td><td>1点</td><td>光通信の加速、太陽光の黒字化</td></tr>
+        </tbody>
+      </table></div>
+      <p class="note">点数は「決算の内容」の評価で、買い推奨ではない。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MEMO ================= -->
+<section class="block" id="memo">
+  <h2>相場メモ</h2>
+  <p class="lead">開いて読む。2026年11月16日時点。</p>
+
+  <details class="memo" open>
+    <summary>今の相場 <small>指数は戻したが、AI半導体だけ弱い</small></summary>
+    <div class="body">
+      <p class="one">先週のS&amp;P500は+2.5%。ただし金曜はナスダック100が−1.19%で、均等加重（RSP）は+0.19%。売られているのはAI半導体に集中している。</p>
+      <div class="tbl"><table><tbody>
+        <tr><td class="k">NVIDIA</td><td>11/12にフアンCEOが辞任。クレスCFOが暫定CEO。株は週間−12.8%、HSBCが格下げ。11/17の決算が新体制の初舞台</td></tr>
+        <tr><td class="k">AIの資金繰り</td><td>NVIDIAが他社に出している保証が推計4,000億ドル。CRWVは好決算の直後に40億ドルの調達報道で下落。NBISも設備投資の大きさで上ヒゲ</td></tr>
+        <tr><td class="k">利上げ</td><td>10月CPI +0.4%、卸売物価は前年比6.5%。12/9は利上げ有力で、0.5%も視野（今の政策金利3.75〜4.00%）</td></tr>
+        <tr><td class="k">政治</td><td>中間選挙で民主が上下両院。AI規制・データセンター・12/11の予算期限が火種</td></tr>
+        <tr><td class="k">原油・中東</td><td>イラン情勢で原油高、国債も売られやすい</td></tr>
+        <tr><td class="k">今週の材料</td><td>NVDA決算（11/18朝）、FOMC議事要旨（11/19早朝）、Anthropic上場予定（11/19、報道）、月次オプション満期（11/20）</td></tr>
+      </tbody></table></div>
+      <ul class="tight">
+        <li><b>良い方に転ぶ形</b>：NVDAの数字と見通しが強く、新体制が方針継続を明言。議事要旨で利上げ派が少数</li>
+        <li><b>悪い方に転ぶ形</b>：NVDAの見通しが弱い、または出資・保証の見直しに触れる。小売売上高が強すぎて金利上昇</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="memo">
+    <summary>中間選挙と過去の似た例 <small>結果は民主が上下両院。一番近いのは2018年</small></summary>
+    <div class="body">
+      <p>中間選挙（11/3）は大統領任期の真ん中の議会選挙。大統領側の党は1946年以降20回中18回で下院の議席を減らした。株は「選挙前は弱く、選挙後は強い」が定番（10月は中間選挙年で最強、11月は2番目）。ただし今年は選挙前の下げが浅い。</p>
+      <p><b>結果</b>：民主が下院（244議席前後の見込み）と上院の両方を獲得。11/5にナスダック−5.5%、翌週は指数だけ反発。</p>
+      <p class="one">分かれ目は「利上げがまだ先か、済んだか」。今年は12月の利上げが控えていて2018年型に近い。</p>
+      <div class="tbl"><table>
+        <thead><tr><th>年</th><th>似ている点</th><th>その後</th></tr></thead>
+        <tbody>
+          <tr><td class="k">2018</td><td>中間選挙＋利上げ中＋テック主導の下落</td><td>選挙後も下げ、12/19の利上げで高値比−19.8%</td></tr>
+          <tr><td class="k">2022</td><td>中間選挙＋利上げ済み</td><td>選挙4週間前が底</td></tr>
+          <tr><td class="k">2023</td><td>10年債5%超で−10%</td><td>金利低下で急反発</td></tr>
+          <tr><td class="k">1994</td><td>中間選挙＋利上げ再開</td><td>横ばいの末に底打ち、翌年+37.6%</td></tr>
+          <tr><td class="k">1990</td><td>中東紛争で原油急騰</td><td>原油の天井＝株の底</td></tr>
+          <tr><td class="k">2000 / 2024年7月</td><td>テックから他へ資金移動</td><td>2000年は大崩れ、2024年は一時的</td></tr>
+        </tbody>
+      </table></div>
+      <p>見るべきは選挙より、①FRBの利上げ姿勢 ②AI投資への不安が決算で収まるか ③原油のピーク。</p>
+    </div>
+  </details>
+
+  <details class="memo">
+    <summary>AI投資の心配はどこにあるか <small>需要→回収→資金調達へ</small></summary>
+    <div class="body">
+      <p class="one">「需要はあるか」はほぼ解消。今の焦点は「回収できるか」「お金をどう集めるか」。</p>
+      <ul class="tight">
+        <li><b>本当に怖い需要側のサイン</b>：設備投資の削減、契約キャンセル、GPUレンタル価格の下落（今は逆に上昇中）</li>
+        <li><b>ジレンマ</b>：投資を増やせば回収が不安視され、減らせば上流（NVDA・光・電力）に悪材料。分けるのは投資額ではなく「投資に見合った売上が見えるか」</li>
+        <li><b>Meta vs クラウド3社</b>：Metaは自社用なので回収が見えにくい。MSFT・AMZN・GOOGLは投資がクラウド売上として数字に出る</li>
+        <li><b>金利</b>：大手には利息の話、借金で回すネオクラウドには直撃</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="memo">
+    <summary>ネオクラウド <small>CRWV・NBIS・IREN</small></summary>
+    <div class="body">
+      <p class="one">CRWVは規模で押す攻め型、NBISは財務に余裕のある堅実型、IRENは自前の電力が強み。市場はまだ3社をまとめて売買している。</p>
+      <div class="tbl"><table>
+        <thead><tr><th></th><th>CRWV</th><th>NBIS</th><th>IREN</th></tr></thead>
+        <tbody>
+          <tr><td class="k">四半期売上</td><td>36.6億ドル（+168%）</td><td>9.81億ドル（予想9.07億）</td><td>―</td></tr>
+          <tr><td class="k">受注残</td><td>約1,325億ドル</td><td>約375億ドル（前回時点）</td><td>―</td></tr>
+          <tr><td class="k">見通し</td><td>2026年売上 約133億ドルに引き上げ</td><td>2026年売上30〜34億の下限。2027年は120〜130億</td><td>―</td></tr>
+          <tr><td class="k">現金・借金</td><td>借金は約470億ドル</td><td>現金 約74億ドル（未確認）</td><td>現金76億ドル（前回時点）</td></tr>
+          <tr><td class="k">借金の質</td><td>社債利回り15%超、B格</td><td>低利の転換社債＋前払い金</td><td>利率0〜1%の転換社債</td></tr>
+          <tr><td class="k">主な顧客</td><td>MSFT・META・OpenAI・Anthropic</td><td>MSFT・META</td><td>MSFT・NVDA（Anthropicは報道）</td></tr>
+          <tr><td class="k">主なリスク</td><td>金利・借金・NVDAとの循環取引</td><td>転換社債の希薄化・今後の調達</td><td>赤字拡大・MSFT依存</td></tr>
+          <tr><td class="k">決算</td><td>11/10 済み</td><td>11/12 済み</td><td>11/5 済み</td></tr>
+        </tbody>
+      </table></div>
+      <ul class="tight">
+        <li><b>NBISの決算（11/12）</b>：売上・利益（調整後EBITDA 4.66億ドル）は予想超え。2027年の設備投資は400〜450億ドルで、75〜85%を顧客の前払いなどでまかなう計画。2027年末までに税引前で黒字化。会社はARRを指標から外した。内容の点数は70点（B）</li>
+        <li><b>CRWVの決算（11/10）</b>：内容は82点（A−）。それでも調達報道で売られた＝今は「数字」より「お金の集め方」が見られている</li>
+        <li><b>大手との関係</b>：今は客、将来はライバル。GOOGLはBlackstoneとTPU専門ネオクラウド、METAは自前クラウド構想。ガートナーは2030年までに80%超が独立を保てないと予測</li>
+        <li><b>NBISの150ドル</b>：オプションの建玉が集中する節目。割れると下げが速くなりやすい</li>
+      </ul>
+    </div>
+  </details>
+</section>
+
+<!-- ================= TERMS ================= -->
+<section class="block" id="terms">
+  <h2>用語</h2>
+  <div class="tbl"><table><tbody>
+    <tr><td class="k">寄り前／引け後</td><td>米国市場が開く前／閉まった後の発表</td></tr>
+    <tr><td class="k">ガイダンス</td><td>会社が出す今後の見通し</td></tr>
+    <tr><td class="k">設備投資（capex）</td><td>データセンターなどに使うお金。クラウドの設備投資＝上流の売上</td></tr>
+    <tr><td class="k">FCF</td><td>本業で稼いだ現金 − 設備投資。マイナスは「稼ぎ以上に使っている」</td></tr>
+    <tr><td class="k">受注残</td><td>契約済みでまだ売上になっていない分</td></tr>
+    <tr><td class="k">加速</td><td>伸び率そのものが上がること（30%→35%）</td></tr>
+    <tr><td class="k">ATM</td><td>市場で少しずつ株を売って資金を集める仕組み。希薄化の重しになる</td></tr>
+    <tr><td class="k">転換社債</td><td>株に変わりうる借金。利率は低いが株数が増える（希薄化）</td></tr>
+    <tr><td class="k">CDS</td><td>倒産リスクに備える保険料。上がるほど危ないと見られている</td></tr>
+    <tr><td class="k">ハイパースケーラー／ネオクラウド</td><td>大手クラウド／GPU貸しに特化した新興クラウド</td></tr>
+    <tr><td class="k">HBM</td><td>GPUの横に積む超高速メモリ</td></tr>
+    <tr><td class="k">CPO</td><td>チップのすぐ横に光部品を一体化する技術</td></tr>
+    <tr><td class="k">空売り残</td><td>月2回公表。次は10/30時点分が11/10に出る</td></tr>
+  </tbody></table></div>
+</section>
+</main>
+<button class="totop" id="totop" type="button" aria-label="上へ戻る">↑</button>
+
+<footer>
+  <div class="wrap">
+    <details>
+      <summary>出典</summary>
+      <ul>
+        <li><a href="https://www.stocktitan.net/articles/earnings-calendar-week-of-october-26-2026" target="_blank" rel="noopener">StockTitan 10/26週カレンダー</a> ・ <a href="https://newsroom.amd.com/news/earnings-date-3q-2026/" target="_blank" rel="noopener">AMD</a> ・ <a href="https://www.marketbeat.com/earnings/reports/2026-11-3-arista-networks-inc-stock/" target="_blank" rel="noopener">Arista</a> ・ <a href="https://ir.supermicro.com/news/news-details/2026/Supermicro-Provides-First-Quarter-of-Fiscal-Year-2027-Preliminary-Business-Update/default.aspx" target="_blank" rel="noopener">Supermicro</a> ・ <a href="https://www.stocktitan.net/news/COHR/coherent-corp-announces-timing-of-fy2027-first-quarter-earnings-ddaorgdddw11.html" target="_blank" rel="noopener">Coherent</a> ・ <a href="https://investor.lumentum.com/financial-news-releases/news-details/2026/Lumentum-Announces-Reporting-Date-for-Fiscal-First-Quarter-2027-Financial-Results/default.aspx" target="_blank" rel="noopener">Lumentum</a> ・ <a href="https://newsroom.arm.com/news/arm-announces-earnings-release-date-for-second-quarter-fiscal-year-ending-2027" target="_blank" rel="noopener">Arm</a> ・ <a href="https://investors.datadoghq.com/news-releases/news-release-details/datadog-announces-date-third-quarter-fiscal-year-2026-earnings" target="_blank" rel="noopener">Datadog</a> ・ <a href="https://stockhouse.com/news/press-releases/2026/10/22/iren-to-release-q1-fy27-results-on-november-5-2026" target="_blank" rel="noopener">IREN</a> ・ <a href="https://www.businesswire.com/news/home/20261020762951/en/Eaton-to-announce-third-quarter-2026-earnings-on-November-3-2026" target="_blank" rel="noopener">Eaton</a> ・ <a href="https://www.marketbeat.com/earnings/reports/2026-11-6-vistra-corp-stock/" target="_blank" rel="noopener">Vistra</a> ・ <a href="https://www.globenewswire.com/news-release/2026/10/12/3379176/0/en/terawulf-schedules-conference-call-for-third-quarter-2026-financial-results.html" target="_blank" rel="noopener">TeraWulf</a> ・ <a href="https://www.stocktitan.net/news/AAOI/applied-optoelectronics-announces-date-of-third-quarter-2026-s2qvjkjlf9jn.html" target="_blank" rel="noopener">AAOI</a> ・ <a href="https://www.sec.gov/Archives/edgar/data/0002120882/000119312526420934/d413172d6k.htm" target="_blank" rel="noopener">SK hynix</a></li>
+        <li><a href="https://thriveinmarkets.com/calendar/2026-11-16/" target="_blank" rel="noopener">11/16週の予定</a> ・ <a href="https://www.digrin.com/stocks/earnings_calendar/2026-11-24" target="_blank" rel="noopener">11/24の決算</a> ・ <a href="https://aiweekly.co/alerts/coreweave-q3-revenue-jumps-168-yoy-to-366b-as-backlog-climbs-to-1325b-and-debt" target="_blank" rel="noopener">CoreWeave Q3</a> ・ <a href="https://247wallst.com/cards/coreweave-q3-2026-earnings-crwv-01m73msrkgrgan75a5t7tb9fmz" target="_blank" rel="noopener">CoreWeave見通し</a></li>
+        <li><a href="https://www.cnbc.com/2026/10/22/stock-market-today-live-update.html" target="_blank" rel="noopener">CNBC 相場</a> ・ <a href="https://www.fxstreet.com/analysis/gold-stocks-what-eight-midterm-elections-did-202609082005" target="_blank" rel="noopener">FXStreet 中間選挙</a> ・ <a href="https://fortune.com/2026/10/21/meta-q3-earnings-mark-zuckerberg-capex-muse/" target="_blank" rel="noopener">Fortune Meta決算</a> ・ <a href="https://www.investing.com/news/stock-market-news/meta-launches-35-billion-stock-offering-to-fund-ai-expansion-4972169" target="_blank" rel="noopener">Meta増資</a> ・ <a href="https://www.cnbc.com/2026/10/26/anthropic-ipo-live-updates-ai-s-1-filing.html" target="_blank" rel="noopener">Anthropic S-1</a> ・ <a href="https://www.cnbc.com/2026/10/14/coreweave-stock-bond-yields-ai-debt.html" target="_blank" rel="noopener">CoreWeave社債</a> ・ <a href="https://io-fund.com/ai-stocks/nebius-vs-coreweave-ai-stock" target="_blank" rel="noopener">NBIS vs CRWV</a> ・ <a href="https://www.investing.com/news/stock-market-news/nebius-leads-neocloud-peers-on-balancesheet-resilience-amid-sector-stress-93CH-4973456" target="_blank" rel="noopener">ネオクラウド財務比較</a> ・ <a href="https://www.fool.com/investing/2026/05/24/google-just-shared-bad-news-for-nvidia-and-even-wo/" target="_blank" rel="noopener">Google×Blackstone</a></li>
+      </ul>
+    </details>
+    <p>各社の説明はざっくりした目安。日付・数字は変わることがある。</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var ER = {
+    CLS:["done","10/26 発表済み"], GLW:["done","10/27 発表済み"], STX:["done","10/27 発表済み"], TER:["done","10/27 発表済み"],
+    SKHY:["done","10/28 発表済み"], GEV:["done","10/28 発表済み"], VRT:["done","10/28 発表済み"],
+    MSFT:["done","10/28 発表済み"], GOOGL:["done","10/28 発表済み"], KLAC:["done","10/28 発表済み"], NOW:["done","10/28 発表済み"], EQIX:["done","10/28 発表済み"],
+    ENTG:["done","10/29 発表済み"], AMZN:["done","10/29 発表済み"], INTC:["done","10/29 発表済み"], SNDK:["done","10/29 発表済み"], DLR:["done","10/29 発表済み"],
+    PLTR:["done","11/2 発表済み"], FN:["done","11/2 発表済み"], ETN:["done","11/3 発表済み"], AMD:["done","11/3 発表済み"], ANET:["done","11/3 発表済み"], SMCI:["done","11/3 発表済み"],
+    DDOG:["done","11/4 発表済み"], COHR:["done","11/4 発表済み"], ARM:["done","11/4 発表済み"],
+    LITE:["done","11/5 発表済み"], IREN:["done","11/5 発表済み"], AAOI:["done","11/5 発表済み"], VST:["done","11/6 発表済み"], WULF:["done","11/6 発表済み"],
+    TSM:["done","10/15 発表済み"], META:["done","10/21 発表済み"], LRCX:["done","10/21 発表済み"], BE:["done","10/22 発表済み"], WDC:["done","10/22 発表済み"],
+    CEG:["done","11/9 発表済み"], CRWV:["done","11/10 発表済み"], NBIS:["done","11/12 発表済み"], AMAT:["done","11/12 発表済み"], CSCO:["done","11/12 発表済み"],
+    NVDA:["this","11/17 引け後"], DELL:["later","11/24 予定"]
+  };
+  var NB = {
+    NVDA:[4,"GPUの供給元で出資者。新型GPUの出荷時期がMETA向け納入に直結"],
+    MSFT:[5,"最大級の顧客。Azureの容量不足が続くほど外から借りる需要も続く"],
+    AMZN:[3,"顧客ではないが、大手の投資の方向性が業界全体の需要の温度計"],
+    GOOGL:[4,"需要の温度計であり、TPU外販ではライバル"],
+    ORCL:[3,"借金でAIクラウドを広げる同じ構図。資金不安が出るとネオクラウドにも飛び火"],
+    CRWV:[5,"同業最大手。資金調達・単価・受注がネオクラウド全体の評価になる"],
+    NBIS:[0,""], IREN:[4,"同業。顧客も重なり、資金調達や単価の話が当てはまる"],
+    META:[5,"大口顧客（最大約270億ドル）。投資方針と自前クラウド構想が直結"],
+    TSM:[2], AMD:[2], AVGO:[2], SKHY:[2], MU:[2], SNDK:[2], ANET:[2], SMCI:[2], DELL:[2], CLS:[2],
+    VRT:[2], ETN:[2], GEV:[2], BE:[2], EQIX:[2], DLR:[2], APLD:[2], WULF:[2], HUT:[2], CIFR:[2], PLTR:[2],
+    ASML:[1], AMAT:[1], LRCX:[1], KLAC:[1], TER:[1], ENTG:[1], INTC:[1], GFS:[1], MRVL:[1], ARM:[1], WDC:[1], STX:[1],
+    CSCO:[1], COHR:[1], LITE:[1], AAOI:[1], FN:[1], GLW:[1], CIEN:[1], HPE:[1], CEG:[1], VST:[1], NOW:[1], CRM:[1], ADBE:[1], SNOW:[1], DDOG:[1]
+  };
+  function stars(n){ return "<b>" + "★".repeat(n) + "</b>" + "★".repeat(5 - n); }
+
+  var L = [
+    {id:"tool", nm:"製造装置・素材", an:"工場の機械・材料", dot:"#26306B",
+     how:"<b>見分け方</b>　工程のどこを担当するか。焼き付け（ASML）→ 膜を積む・削る（AMAT・LRCX）→ 検査（KLAC）→ 完成品テスト（TER）。ENTGは工程で使う材料。",
+     c:[
+      ["ASML","ASML","最先端チップの回路を焼き付けるEUV露光装置。","世界で唯一EUVを作れる。オランダ、米国ADR。"],
+      ["AMAT","Applied Materials","膜を積む・削るなど幅広い製造装置。","品揃えの広さで最大級。"],
+      ["LRCX","Lam Research","削る（エッチング）と膜を積む装置。","メモリ向けの比率が高い。"],
+      ["KLAC","KLA","製造中の欠陥を見つける検査・計測装置。","「作る」でなく「見張る」。利益率が高い。"],
+      ["TER","Teradyne","完成したチップを試験するテスター。","AIチップは試験時間が長く需要増。"],
+      ["ENTG","Entegris","製造用の特殊材料・フィルター・容器。","消耗品寄り。工場の稼働量に比例。"]
+     ]},
+    {id:"fab", nm:"受託製造", an:"部品工場", dot:"#2D3A7A",
+     how:"<b>見分け方</b>　どれだけ最先端を作れるか。最先端はTSMがほぼ独占、INTCは追う立場、GFSは最先端を狙わない。",
+     c:[
+      ["TSM","TSMC","NVDA・AMD・Appleのチップを作る世界最大の受託製造。","AIチップの大半がここ製。台湾、米国ADR。"],
+      ["INTC","Intel","自社CPUに加え、他社チップの受託製造にも参入。","立て直し途中。受託製造の成否が焦点。"],
+      ["GFS","GlobalFoundries","成熟プロセスの受託製造。","車・通信向け。AIの波には乗りにくい。"]
+     ]},
+    {id:"chip", nm:"AIチップ", an:"コンロ・オーブンのメーカー", dot:"#34458A",
+     how:"<b>見分け方</b>　汎用品か特注品か設計図か。NVDA・AMDは汎用GPU、AVGO・MRVLは大手向け特注チップ、ARMは設計図のライセンス。",
+     c:[
+      ["NVDA","Nvidia","AI用GPUの最大手。サーバー一式やソフト（CUDA）まで提供。","CUDAによる囲い込みが最大の強み。"],
+      ["AMD","AMD","GPUでNVDAの対抗馬。CPUでも大手。","NVDAの代わりを求める客の受け皿。"],
+      ["AVGO","Broadcom","GoogleのTPUなど顧客専用AIチップとネットワーク用チップ。","大手の自社チップが増えるほど恩恵。"],
+      ["MRVL","Marvell","特注AIチップと光通信用の信号処理チップ。","AVGOと似た特注路線の2番手。"],
+      ["ARM","Arm Holdings","チップの設計図をライセンスして使用料を得る。","自社ではほぼ作らない。"]
+     ]},
+    {id:"mem", nm:"メモリ・記憶装置", an:"食材の冷蔵庫・倉庫", dot:"#3B5099",
+     how:"<b>見分け方</b>　計算中に使う作業台（DRAM・HBM）か、長く保存する倉庫（NAND・SSD・HDD）か。AIの主役はHBM。",
+     c:[
+      ["SKHY","SK hynix","AI向け高速メモリHBMの先行者。","HBM最大手でNVDAの主要供給元。韓国。"],
+      ["MU","Micron","米国唯一の大手メモリ。DRAM・HBM・NAND。","HBMで追い上げ中。"],
+      ["SNDK","Sandisk","NANDフラッシュとSSD。","2025年にWDCから分離。"],
+      ["WDC","Western Digital","大容量HDD。","大量データを安く保存する倉庫。"],
+      ["STX","Seagate","大容量HDDの大手。","WDCと2社でほぼ寡占。"]
+     ]},
+    {id:"net", nm:"ネットワーク", an:"厨房内の電気配線", dot:"#4260A8",
+     how:"<b>見分け方</b>　客の中心がどこか。ANETは大手クラウド、CSCOは一般企業。",
+     c:[
+      ["ANET","Arista Networks","データセンター内の高速スイッチ。","大手クラウド・METAが主要顧客。"],
+      ["CSCO","Cisco","ネットワーク機器の老舗。","企業向け中心。成長ではANETに劣る。"]
+     ]},
+    {id:"opt", nm:"光通信", an:"厨房内の配管（光）", dot:"#4A70B4",
+     how:"<b>見分け方</b>　光の元になる部品（LITE・COHR・AAOI）、組み立ての受託（FN）、光ファイバーそのもの（GLW）、拠点間の長距離（CIEN）。",
+     c:[
+      ["COHR","Coherent","光トランシーバー・レーザー・材料まで幅広く。","垂直統合型。NVDAが20億ドル出資。"],
+      ["LITE","Lumentum","レーザー・光部品、光回路スイッチ、CPO向けレーザー。","次世代技術で注目。NVDAが20億ドル出資。"],
+      ["AAOI","Applied Optoelectronics","データセンター向け光トランシーバー。","小型で値動きが大きい。"],
+      ["FN","Fabrinet","他社の光部品を受託で組み立てる。","NVDAなどが顧客。顧客集中に注意。"],
+      ["GLW","Corning","光ファイバーとガラス製品。","AI向けファイバーが成長の中心。20億ドルのATMあり。"],
+      ["CIEN","Ciena","データセンター同士をつなぐ長距離光伝送装置。","建物の中ではなく拠点間が担当。"]
+     ]},
+    {id:"srv", nm:"サーバー", an:"厨房設備の工事業者", dot:"#5281BE",
+     how:"<b>見分け方</b>　速さ（SMCI）、企業向けの総合力（DELL・HPE）、大手クラウド向けの受託組立（CLS）。",
+     c:[
+      ["SMCI","Super Micro Computer","AIサーバーに特化。","新型GPUの搭載が速い。利益率は低め。"],
+      ["DELL","Dell Technologies","サーバー・PCの大手。","企業向けの販売網が強み。"],
+      ["HPE","Hewlett Packard Enterprise","サーバーとネットワーク機器（Juniper買収）。","企業・政府向け中心。"],
+      ["CLS","Celestica","大手クラウド向けにスイッチ・サーバーを受託組立。","上位3社で売上の約3分の2。カナダ。"]
+     ]},
+    {id:"pow", nm:"電力・冷却", an:"ガス・電気・空調", dot:"#5A91C6",
+     how:"<b>見分け方</b>　設備を売るか（VRT・ETN・GEV・BE）、電気を売るか（CEG・VST）。",
+     c:[
+      ["VRT","Vertiv","データセンター向けの冷却と電源設備。","液冷の需要が急増。"],
+      ["ETN","Eaton","変圧器・配電盤など電気を配る機器。","「作る」でなく「配る」担当。"],
+      ["GEV","GE Vernova","ガスタービン・送電・風力の発電設備。","発電所そのものを作る側。"],
+      ["BE","Bloom Energy","燃料電池で敷地内発電。","電力網なしで約3か月で稼働。10/22決算後に急落。"],
+      ["CEG","Constellation Energy","原子力発電の最大手。","大手テックと長期契約で電気を売る。"],
+      ["VST","Vistra","テキサス中心の発電会社。","電力需要と電気料金の上昇が追い風。"]
+     ]},
+    {id:"dc", nm:"データセンター施設", an:"貸しビル", dot:"#62A0CD",
+     how:"<b>見分け方</b>　多数の企業が入居（EQIX）か、大口客に丸ごと貸す（DLR）か。どちらもREIT。",
+     c:[
+      ["EQIX","Equinix","多くの企業が入居し相互接続できるデータセンター。","「つながりやすさ」が売り。"],
+      ["DLR","Digital Realty","大規模データセンターを大口顧客に貸す。","大手クラウド向けの大型案件が中心。"]
+     ]},
+    {id:"cloud", nm:"大手クラウド", an:"大手レンタルキッチン", dot:"#6BAED3",
+     how:"<b>見分け方</b>　クラウド以外に何を持つか。MSFTは企業向けソフト、AMZNは通販、GOOGLは検索広告と自社チップ、ORCLはデータベース。",
+     c:[
+      ["MSFT","Microsoft（Azure）","Azureと企業向けソフト。","OpenAIとの提携、自社チップMaia。"],
+      ["AMZN","Amazon（AWS）","クラウド最大シェアのAWSと通販。","自社チップTrainium、Anthropicに出資。"],
+      ["GOOGL","Alphabet（Google Cloud）","検索広告、Google Cloud、自社チップTPU、Gemini。","全部自前。TPUを外部にも売り始めた。"],
+      ["ORCL","Oracle","データベース大手からAIクラウドへ急拡大。","大型契約で急成長、借入増に注意。"]
+     ]},
+    {id:"neo", nm:"ネオクラウド", an:"AI専用の新興キッチン", dot:"#76BBD8",
+     how:"<b>見分け方</b>　GPUを持って貸す（CRWV・NBIS・IREN）か、建物と電力を貸す（APLD・WULF・HUT・CIFR）か。元ビットコインマイナーが多い。",
+     c:[
+      ["CRWV","CoreWeave","最大手。GPUを大量に持ち計算能力を貸す。","借金も最大。社債利回りが急上昇。"],
+      ["NBIS","Nebius Group","自社データセンター中心、ソフトまで自社開発。","財務に余裕。転換社債と前払い金で調達。"],
+      ["IREN","IREN","元マイナー。GPUを持ち計算能力を貸す。","自前の電力と土地が強み。"],
+      ["APLD","Applied Digital","AI向けデータセンターを建てて貸す。","CRWVなどが入居。"],
+      ["WULF","TeraWulf","元マイナー。AI向けデータセンターを貸す。","Google系の保証つき案件。"],
+      ["HUT","Hut 8","元マイナー。電力と施設の開発。","マイニングとAI施設の両方。"],
+      ["CIFR","Cipher Mining","元マイナー。大手向けにAI用施設を貸す。","電力をAI向けに転用する典型例。"]
+     ]},
+    {id:"model", nm:"AIモデル開発", an:"レシピ開発の料理研究家", dot:"#82C3DB",
+     how:"<b>見分け方</b>　上場株で買えるのは大手の一部門だけ。OpenAI・Anthropic（11月にIPO予定）もここ。",
+     c:[
+      ["GOOGL","Alphabet（Gemini）","AIモデルGeminiを開発。","検索・クラウドで直接お金に変えられる。"],
+      ["META","Meta（Llama）","AIモデルを開発。","自社サービスと広告に使う。"]
+     ]},
+    {id:"app", nm:"AIを使うサービス・ソフト", an:"料理を出すお店", dot:"#8FC1D4",
+     how:"<b>見分け方</b>　METAは消費者向け広告、それ以外は企業向けソフト。AIで値上げや新機能を売れるかが勝負。",
+     c:[
+      ["META","Meta Platforms","Facebook・Instagramの広告で稼ぐ。","巨額投資の回収が見えにくいのが課題。"],
+      ["PLTR","Palantir","政府・企業向けのデータ分析とAI基盤。","割高感が常に議論になる。"],
+      ["NOW","ServiceNow","社内業務の流れを管理するソフト。","AIエージェントで効率化。"],
+      ["CRM","Salesforce","顧客管理ソフトの最大手。","顧客対応にAIエージェント。"],
+      ["ADBE","Adobe","画像・動画・PDFの制作ソフト。","生成AIは武器にも脅威にもなる。"],
+      ["SNOW","Snowflake","企業のデータを保管・分析する基盤。","使った分だけ課金。"],
+      ["DDOG","Datadog","システムの稼働状況を監視するツール。","AIアプリが増えるほど監視対象も増える。"]
+     ]}
+  ];
+
+  var chain = document.getElementById("chain");
+  L.forEach(function(layer, i){
+    var d = document.createElement("details"); d.className = "layer"; d.id = "layer-" + layer.id;
+    d.style.setProperty("--dot", layer.dot); if (i === 0) d.open = true;
+    var s = document.createElement("summary");
+    var nm = document.createElement("span"); nm.className = "nm"; nm.textContent = layer.nm;
+    var an = document.createElement("span"); an.className = "an"; an.style.cssText = "font-size:12.5px;color:var(--muted)"; an.textContent = layer.an;
+    var tks = document.createElement("span"); tks.className = "tks tk"; tks.textContent = layer.c.map(function(c){return c[0];}).join("・");
+    s.appendChild(nm); s.appendChild(an); s.appendChild(tks); d.appendChild(s);
+    var how = document.createElement("p"); how.className = "how"; how.innerHTML = layer.how; d.appendChild(how);
+    var grid = document.createElement("div"); grid.className = "cards";
+    layer.c.forEach(function(c){
+      var card = document.createElement("div"); card.className = "card"; card.id = "t-" + c[0] + "-" + layer.id;
+      card.setAttribute("data-t", c[0]);
+      var er = ER[c[0]]; card.setAttribute("data-er", er ? er[0] : "none");
+      var nb = NB[c[0]]; card.setAttribute("data-nb", nb ? nb[0] : 0);
+      var row = document.createElement("div"); row.className = "row";
+      var t = document.createElement("span"); t.className = "tk"; t.textContent = c[0];
+      var co = document.createElement("span"); co.className = "co"; co.textContent = c[1];
+      row.appendChild(t); row.appendChild(co);
+      if (er){ var b = document.createElement("span"); b.className = "badge " + er[0]; b.textContent = er[1]; row.appendChild(b); }
+      var r = document.createElement("p"); r.className = "role"; r.textContent = c[2];
+      var df = document.createElement("p"); df.className = "diff"; df.textContent = c[3];
+      card.appendChild(row); card.appendChild(r); card.appendChild(df);
+      if (nb){
+        var nbl = document.createElement("div");
+        if (nb[0] === 0){ nbl.className = "nb self"; nbl.textContent = "NBISそのもの（決算は11/10ごろ）"; }
+        else {
+          nbl.className = "nb";
+          var lab = document.createElement("span"); lab.textContent = "NBIS";
+          var stp = document.createElement("span"); stp.className = "st"; stp.innerHTML = stars(nb[0]); stp.setAttribute("aria-label","影響度" + nb[0]);
+          nbl.appendChild(lab); nbl.appendChild(stp);
+          if (nb[1]){ var wy = document.createElement("span"); wy.className = "why"; wy.textContent = nb[1]; nbl.appendChild(wy); }
+        }
+        card.appendChild(nbl);
+      }
+      grid.appendChild(card);
+    });
+    d.appendChild(grid);
+    var nomatch = document.createElement("div"); nomatch.className = "nomatch"; nomatch.textContent = "該当なし"; d.appendChild(nomatch);
+    chain.appendChild(d);
+  });
+
+  // calendar chips
+  function firstCard(t){ return document.querySelector('.card[data-t="'+t+'"]'); }
+  document.querySelectorAll(".chips[data-t]").forEach(function(box){
+    box.getAttribute("data-t").split(" ").forEach(function(raw){
+      if(!raw) return;
+      var est = raw.slice(-1) === "*"; var t = est ? raw.slice(0,-1) : raw;
+      var b = document.createElement("button"); b.type = "button"; b.className = "chip tk" + (est ? " est" : ""); b.textContent = t;
+      b.setAttribute("aria-label", t + "を業界マップで見る");
+      b.addEventListener("click", function(){
+        setFilter("all");
+        var card = firstCard(t); if(!card) return;
+        var det = card.closest("details"); if(det) det.open = true;
+        card.scrollIntoView({behavior: reduce ? "auto" : "smooth", block:"center"});
+        card.classList.remove("hl"); void card.offsetWidth; card.classList.add("hl");
+      });
+      box.appendChild(b);
+    });
+  });
+
+  // today / past marking (viewer's device date)
+  (function(){
+    var now = new Date(); var pad = function(n){ return (n<10?"0":"")+n; };
+    var today = now.getFullYear() + "-" + pad(now.getMonth()+1) + "-" + pad(now.getDate());
+    document.querySelectorAll(".day[data-date]").forEach(function(d){
+      var dt = d.getAttribute("data-date");
+      if (dt < today) d.classList.add("past");
+      if (dt === today){ d.classList.add("today"); var h = d.querySelector(".day-h"); var n = document.createElement("span"); n.className="now"; n.textContent="今日（米国）"; h.appendChild(n); }
+    });
+  })();
+
+  // filters
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var btns = document.querySelectorAll(".filters button");
+  function setFilter(f){
+    if (f === "open"){
+      var allOpen = Array.prototype.every.call(document.querySelectorAll(".layer"), function(d){return d.open;});
+      document.querySelectorAll(".layer").forEach(function(d){ d.open = !allOpen; });
+      document.querySelector('.filters button[data-f="open"]').textContent = allOpen ? "全部ひらく" : "全部とじる";
+      return;
+    }
+    btns.forEach(function(b){ if(b.getAttribute("data-f") !== "open") b.setAttribute("aria-pressed", String(b.getAttribute("data-f") === f)); });
+    document.querySelectorAll(".layer").forEach(function(d){
+      var any = false;
+      d.querySelectorAll(".card").forEach(function(c){
+        var show = (f === "all") || (f === "nb" ? Number(c.getAttribute("data-nb")) >= 4 : c.getAttribute("data-er") === f);
+        c.classList.toggle("hidden", !show);
+        if(show){ any = true; if(!reduce){ c.classList.remove("fi"); void c.offsetWidth; c.classList.add("fi"); } }
+      });
+      d.querySelector(".nomatch").style.display = any ? "none" : "block";
+      if (f !== "all") { d.open = any; d.classList.toggle("hidden", !any); } else d.classList.remove("hidden");
+    });
+  }
+  btns.forEach(function(b){ b.addEventListener("click", function(){ setFilter(b.getAttribute("data-f")); }); });
+
+  if (location.hash && /^#[A-Za-z0-9_~.-]+$/.test(location.hash)) {
+    var target = document.getElementById(location.hash.slice(1));
+    if (target) setTimeout(function(){ target.scrollIntoView(); }, 0);
+  }
+
+  // reveal
+  document.querySelectorAll(".week").forEach(function(w){ w.querySelectorAll(".chip").forEach(function(c, i){ c.style.setProperty("--i", i); }); });
+  if (!reduce && "IntersectionObserver" in window){
+    var els = document.querySelectorAll("section.block>h2, section.block>.lead, .legend, .week, .strip .box, .filters, .layer, .panel, .tbl, .memo, section.block>.note");
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
+    }, {rootMargin:"0px 0px -6% 0px", threshold:0.06});
+    els.forEach(function(el){
+      var idx = Array.prototype.indexOf.call(el.parentElement.children, el);
+      el.style.setProperty("--d", Math.min(idx, 6) * 60 + "ms"); el.classList.add("rv"); io.observe(el);
+    });
+  }
+
+  // progress + scrollspy
+  var bar = document.querySelector("nav.toc .bar");
+  function prog(){ var h = document.documentElement, max = h.scrollHeight - h.clientHeight; bar.style.transform = "scaleX(" + (max > 0 ? Math.min(1, h.scrollTop / max) : 0) + ")"; }
+  addEventListener("scroll", prog, {passive:true}); addEventListener("resize", prog); prog();
+  var links = document.querySelectorAll("nav.toc a"), map = {};
+  links.forEach(function(a){ map[a.getAttribute("href").slice(1)] = a; });
+  if ("IntersectionObserver" in window){
+    var spy = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (!e.isIntersecting) return; var a = map[e.target.id]; if (!a) return;
+        links.forEach(function(x){ x.classList.remove("on"); }); a.classList.add("on");
+        a.parentElement.scrollTo({left: Math.max(0, a.offsetLeft - 24), behavior: reduce ? "auto" : "smooth"});
+      });
+    }, {rootMargin:"-40% 0px -55% 0px"});
+    document.querySelectorAll("section.block[id]").forEach(function(s){ spy.observe(s); });
+  }
+
+  // ---- v3: countdown to next event ----
+  var slots = Array.prototype.slice.call(document.querySelectorAll("[data-ts]"));
+  function nameOf(el){
+    if (el.classList.contains("event")) return el.textContent.split("（")[0].split("→")[0].trim();
+    var t = el.querySelector(".chips"); var names = t ? Array.prototype.map.call(t.querySelectorAll(".chip"), function(c){return c.textContent;}).join("・") : "";
+    return names + " 決算";
+  }
+  function tick(){
+    var now = Date.now(), next = null;
+    slots.forEach(function(el){
+      var t = Date.parse(el.getAttribute("data-ts"));
+      el.classList.toggle("past", t < now - 3*3600*1000);
+      el.classList.remove("upnext");
+      if (t > now && (!next || t < next.t)) next = {t:t, el:el};
+    });
+    var nm = document.getElementById("next-name"), cd = document.getElementById("next-cd");
+    if (next){
+      next.el.classList.add("upnext");
+      nm.textContent = nameOf(next.el);
+      var d = Math.max(0, next.t - now), h = Math.floor(d/3600000), m = Math.floor(d%3600000/60000), sec = Math.floor(d%60000/1000);
+      cd.textContent = (h<10?"0":"")+h+":"+(m<10?"0":"")+m+":"+(sec<10?"0":"")+sec;
+    } else { nm.textContent = "予定なし"; cd.textContent = ""; }
+  }
+  setTimeout(function(){ tick(); setInterval(tick, 1000); }, 50);
+
+  // ---- v3: theme toggle ----
+  var root = document.documentElement, tb = document.getElementById("theme");
+  try { var saved = localStorage.getItem("theme"); if (saved) root.setAttribute("data-theme", saved); } catch(e){}
+  tb.addEventListener("click", function(){
+    var dark = root.getAttribute("data-theme") === "dark" || (!root.getAttribute("data-theme") && matchMedia("(prefers-color-scheme: dark)").matches);
+    var nextTheme = dark ? "light" : "dark";
+    var apply = function(){ root.setAttribute("data-theme", nextTheme); try { localStorage.setItem("theme", nextTheme); } catch(e){} };
+    if (document.startViewTransition && !reduce) document.startViewTransition(apply); else apply();
+  });
+
+  // ---- v3: back to top ----
+  var tt = document.getElementById("totop");
+  addEventListener("scroll", function(){ tt.classList.toggle("show", (document.documentElement.scrollTop || 0) > 600); }, {passive:true});
+  tt.addEventListener("click", function(){ window.scrollTo({top:0, behavior: reduce ? "auto" : "smooth"}); });
+
+  // ---- v3: pointer glow + tilt on cards/panels ----
+  document.querySelectorAll(".card, .panel").forEach(function(c){
+    c.addEventListener("pointermove", function(ev){
+      var b = c.getBoundingClientRect();
+      c.style.setProperty("--mx", (ev.clientX - b.left) + "px"); c.style.setProperty("--my", (ev.clientY - b.top) + "px");
+    });
+  });
+  // stagger index for cards inside layers
+  document.querySelectorAll(".layer").forEach(function(d){ d.querySelectorAll(".card").forEach(function(c, i){ c.style.setProperty("--ci", i); }); });
+})();
+</script>
+</body>
+</html>
+
+<a id="lib-back" href="../index.html" style="position:fixed;left:12px;bottom:14px;z-index:9999;padding:8px 14px;border-radius:99px;background:rgba(20,22,40,.86);color:#fff;font:700 13px/1 system-ui,sans-serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ライブラリ</a>
+</body></html>
