@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA決算 直前ブリーフ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Shippori+Mincho:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+/* layout idea: 上部のタブで「カード版」と「レポート版」を切り替える。各版の見た目は .v1 / .v2 の中に閉じ込める */
+:root{--tb-bg:#ffffff;--tb-ink:#171a2b;--tb-muted:#5b6078;--tb-line:#d9dcea;--tb-accent:#3340c9}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--tb-bg:#14162a;--tb-ink:#e8eaf6;--tb-muted:#9aa0bd;--tb-line:#2b2f4c;--tb-accent:#8b96ff;color-scheme:dark}}
+:root[data-theme="dark"]{--tb-bg:#14162a;--tb-ink:#e8eaf6;--tb-muted:#9aa0bd;--tb-line:#2b2f4c;--tb-accent:#8b96ff;color-scheme:dark}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--tb-bg);color:var(--tb-ink)}
+.tabs{position:sticky;top:0;z-index:10;display:flex;gap:4px;align-items:center;padding:8px 16px;background:var(--tb-bg);border-bottom:1px solid var(--tb-line);font-family:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",sans-serif}
+.tabs button{font:inherit;font-size:.9rem;font-weight:700;padding:7px 16px;border:1px solid transparent;border-radius:8px;background:none;color:var(--tb-muted);cursor:pointer;transition:background .25s,color .25s}
+.tabs button:hover{color:var(--tb-ink)}
+.tabs button[aria-selected="true"]{background:var(--tb-accent);color:var(--tb-bg)}
+.tabs button:focus-visible{outline:3px solid var(--tb-accent);outline-offset:2px}
+.tabs small{margin-left:auto;font-size:.76rem;color:var(--tb-muted)}
+.view{min-height:100vh}
+.view[hidden]{display:none}
+.view.shown{animation:tabin .35s ease-out}
+@keyframes tabin{from{opacity:.3;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (max-width:520px){.tabs small{display:none}}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}.view.shown{animation:none}}
+@keyframes slide{to{transform:translateX(-50%)}}
+@keyframes pulse{50%{transform:scale(1.7);opacity:.35}}
+@keyframes draw{from{stroke-dashoffset:var(--len)}to{stroke-dashoffset:0}}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes spread{from{transform:scaleX(.02)}to{transform:scaleX(1)}}
+@keyframes enter{from{opacity:.25;transform:translateY(16px)}to{opacity:1;transform:none}}
+.v1{
+
+/* layout idea: 一本の縦の「当日の流れ」に沿って、状況→基準→判定→時間別チェック→行動→波及の順に読む決算デスクのブリーフ */
+&{
+  --bg:#f3f4f8; --surface:#ffffff; --ink:#171a2b; --muted:#5b6078; --line:#d9dcea;
+  --accent:#3340c9; --accent-soft:#e6e8fb;
+  --up:#0f8a5f; --up-soft:#dff3ea; --down:#c8372d; --down-soft:#fbe4e1; --warn:#a86a10; --warn-soft:#f8ecd6;
+  --display:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",sans-serif;
+  --body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) &{
+    --bg:#0f1120; --surface:#181b30; --ink:#e8eaf6; --muted:#9aa0bd; --line:#2b2f4c;
+    --accent:#8b96ff; --accent-soft:#23274a;
+    --up:#3ecf95; --up-soft:#12342a; --down:#ff6b5e; --down-soft:#3a1b1c; --warn:#f0b354; --warn-soft:#3a2d14;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"] &{
+  --bg:#0f1120; --surface:#181b30; --ink:#e8eaf6; --muted:#9aa0bd; --line:#2b2f4c;
+  --accent:#8b96ff; --accent-soft:#23274a;
+  --up:#3ecf95; --up-soft:#12342a; --down:#ff6b5e; --down-soft:#3a1b1c; --warn:#f0b354; --warn-soft:#3a2d14;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+
+&{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.8;-webkit-font-smoothing:antialiased}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.35;margin:0}
+h2{font-size:1.6rem;font-weight:900}
+h3{font-size:1.08rem;font-weight:700}
+p{margin:0}
+.lead{max-width:38em;color:var(--muted)}
+section{padding:44px 0;border-top:1px solid var(--line)}
+.sec-head{display:flex;flex-direction:column;gap:8px;margin-bottom:22px}
+.kicker{font-family:var(--mono);font-size:.78rem;color:var(--accent);letter-spacing:.08em}
+
+.ticker{background:var(--ink);color:var(--bg);overflow:hidden;white-space:nowrap;font-family:var(--mono);font-size:.8rem;padding:7px 0}
+.ticker-track{display:inline-flex;gap:36px;padding-left:36px;animation:slide 48s linear infinite}
+.ticker span b{font-weight:600}
+.t-down{color:#ff8f85}.t-flat{opacity:.75}
+
+
+.hero{padding:34px 20px 40px}
+.hero-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:28px;align-items:end}
+.stamp{font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+h1{font-size:clamp(1.9rem,4.6vw,3rem);font-weight:900;margin:8px 0 14px}
+h1 em{font-style:normal;color:var(--accent)}
+.count{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:8px}
+.count-label{font-size:.85rem;color:var(--muted)}
+.count-digits{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.count-digits .d{font-family:var(--mono);font-size:clamp(1.8rem,5vw,2.6rem);font-weight:600;line-height:1}
+.count-digits small{font-size:.75rem;color:var(--muted);margin-right:6px}
+.live{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;color:var(--muted)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--down);animation:pulse 1.6s ease-in-out infinite}
+
+
+.verdict{margin-top:26px;background:var(--accent-soft);border-left:5px solid var(--accent);border-radius:0 12px 12px 0;padding:16px 20px}
+.verdict p{max-width:44em}
+.verdict strong{font-weight:900}
+
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:22px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.tile .k{font-size:.8rem;color:var(--muted)}
+.tile .v{font-family:var(--mono);font-size:1.55rem;font-weight:600;line-height:1.2}
+.tile .s{font-size:.78rem;color:var(--muted)}
+.neg{color:var(--down)}.pos{color:var(--up)}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+.chart-scroll{overflow-x:auto}
+svg text{font-family:var(--mono);fill:var(--muted);font-size:11px}
+svg .lbl{font-family:var(--body);font-size:11.5px;fill:var(--ink)}
+.path-line{fill:none;stroke:var(--down);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
+.path-area{fill:var(--down);opacity:.08}
+.grid-l{stroke:var(--line);stroke-width:1}
+.draw{stroke-dasharray:var(--len);stroke-dashoffset:0}
+.draw.go{animation:draw 2.2s ease-out both}
+
+.events{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 22px;margin-top:14px;font-size:.9rem}
+.events div{display:grid;grid-template-columns:5.2em 1fr;gap:10px;border-top:1px dashed var(--line);padding-top:8px}
+.events b{font-family:var(--mono);font-weight:600;color:var(--accent);font-size:.82rem}
+
+.bars{display:flex;flex-direction:column;gap:38px;padding:16px 0 10px}
+.bar-row{display:grid;grid-template-columns:11.5em 1fr;gap:14px;align-items:center}
+.bar-name{font-size:.92rem;font-weight:700}
+.bar-name small{display:block;font-weight:400;color:var(--muted);font-size:.78rem}
+.track{position:relative;height:34px;background:var(--bg);border-radius:8px;border:1px solid var(--line)}
+.zone{position:absolute;top:0;bottom:0;background:var(--accent-soft);border-left:2px solid var(--accent);border-right:2px solid var(--accent)}
+.pin{position:absolute;top:-5px;bottom:-5px;width:3px;background:var(--ink);border-radius:2px;transform-origin:bottom}
+.pin.cons{background:var(--warn)}
+.pin::after{content:attr(data-l);position:absolute;top:-19px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:.7rem;white-space:nowrap;color:var(--ink)}
+.pin.low::after{top:auto;bottom:-19px}
+.grow.go{animation:grow .9s cubic-bezier(.2,.8,.2,1) both}
+
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:.8rem;color:var(--muted);margin-top:26px}
+.legend i{display:inline-block;width:12px;height:12px;vertical-align:-1px;margin-right:6px;border-radius:2px}
+
+.scen{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px;border-top:5px solid var(--muted)}
+.card.up{border-top-color:var(--up)}.card.down{border-top-color:var(--down)}.card.mid{border-top-color:var(--warn)}
+.pill{align-self:flex-start;font-family:var(--mono);font-size:.78rem;font-weight:600;padding:2px 10px;border-radius:99px}
+.up .pill{background:var(--up-soft);color:var(--up)}.down .pill{background:var(--down-soft);color:var(--down)}.mid .pill{background:var(--warn-soft);color:var(--warn)}
+.card ul{margin:0;padding-left:1.1em;font-size:.92rem;display:flex;flex-direction:column;gap:4px}
+.card .move{font-family:var(--mono);font-weight:600;font-size:1.15rem}
+.note{font-size:.82rem;color:var(--muted)}
+
+.range{position:relative;height:74px;margin:34px 6px 8px}
+.range-axis{position:absolute;left:0;right:0;top:34px;height:8px;border-radius:4px;background:linear-gradient(90deg,var(--down) 0%,var(--warn) 50%,var(--up) 100%);opacity:.35}
+.range-band{position:absolute;top:28px;height:20px;border-radius:6px;background:var(--accent);opacity:.3;transform-origin:center}
+.range-band.go{animation:spread 1.4s ease-out both}
+
+.mk{position:absolute;top:22px;width:2px;height:32px;background:var(--ink)}
+.mk span{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:.72rem;font-family:var(--mono)}
+.mk .t{top:-20px}.mk .b{top:36px;color:var(--muted)}
+.mk.now{width:4px;background:var(--accent)}
+
+.judge{display:grid;grid-template-columns:1.2fr 1fr;gap:18px}
+.ctl{display:flex;flex-direction:column;gap:16px}
+.ctl label{display:flex;flex-direction:column;gap:4px;font-size:.9rem;font-weight:700}
+.ctl label span{display:flex;justify-content:space-between;gap:10px}
+.ctl output{font-family:var(--mono);color:var(--accent)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+select{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.result{border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:10px;justify-content:center;background:var(--surface);border:2px solid var(--line);transition:background .4s,border-color .4s}
+.result[data-s="up"]{background:var(--up-soft);border-color:var(--up)}
+.result[data-s="down"]{background:var(--down-soft);border-color:var(--down)}
+.result[data-s="mid"]{background:var(--warn-soft);border-color:var(--warn)}
+.result .big{font-size:1.5rem;font-weight:900;line-height:1.3}
+.gauge{height:10px;border-radius:5px;background:var(--bg);border:1px solid var(--line);position:relative}
+.gauge i{position:absolute;top:-4px;width:6px;height:18px;border-radius:3px;background:var(--ink);left:50%;transition:left .5s cubic-bezier(.2,.8,.2,1)}
+
+.tl{position:relative;display:flex;flex-direction:column;gap:16px;padding-left:26px}
+.tl::before{content:"";position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.tl-item{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.tl-item::before{content:"";position:absolute;left:-26px;top:22px;width:16px;height:16px;border-radius:50%;background:var(--surface);border:3px solid var(--accent)}
+.tl-item.key::before{background:var(--accent);animation:pulse 1.8s ease-in-out infinite}
+.when{font-family:var(--mono);font-weight:600;color:var(--accent)}
+.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.checks li{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;font-size:.94rem}
+.checks input{width:18px;height:18px;margin-top:6px;accent-color:var(--accent)}
+.checks label b{font-weight:700}
+.checks .good{color:var(--up);font-weight:700}.checks .bad{color:var(--down);font-weight:700}
+.checks input:checked + label{opacity:.55}
+
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.8rem;color:var(--muted);font-weight:700}
+.tbl{overflow-x:auto}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.rules{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:8px;font-size:.95rem}
+.tag{font-family:var(--mono);font-size:.7rem;padding:1px 7px;border-radius:4px;background:var(--bg);border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.hist{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;align-items:end;height:170px;position:relative;margin-top:8px}
+.hist::before{content:"";position:absolute;left:0;right:0;top:95px;border-top:1px solid var(--muted)}
+.hb{position:relative;height:100%}
+.hb i{position:absolute;left:18%;right:18%;border-radius:4px}
+.hb i.p{background:var(--up);bottom:75px;transform-origin:bottom}
+.hb i.n{background:var(--down);top:95px;transform-origin:top}
+.hb span{position:absolute;left:0;right:0;text-align:center;font-family:var(--mono);font-size:.8rem;font-weight:600}
+.hb em{position:absolute;left:0;right:0;bottom:-26px;text-align:center;font-style:normal;font-size:.75rem;color:var(--muted)}
+.src{columns:2;column-gap:28px;font-size:.84rem;padding-left:1.2em;margin:0}
+.src li{break-inside:avoid;margin-bottom:6px}
+footer{padding:26px 20px 50px;color:var(--muted);font-size:.84rem;border-top:1px solid var(--line)}
+.enter{animation:enter .7s cubic-bezier(.2,.8,.2,1) both}
+
+@media (max-width:820px){
+  .hero-grid,.judge,.two{grid-template-columns:1fr}
+  .tiles{grid-template-columns:repeat(2,1fr)}
+  .scen{grid-template-columns:1fr}
+  .events{grid-template-columns:1fr}
+  .bar-row{grid-template-columns:1fr}
+  .src{columns:1}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none !important;transition:none !important}
+  
+}
+
+}
+.v2{
+
+/* layout idea: 証券会社の朝のレポート。1段組の本文と罫線の表が主役。色は白黒灰と青1色 */
+&{
+  --bg:#ffffff; --ink:#111111; --grey:#666666; --rule:#cfcfcf; --wash:#f2f2f2; --accent:#1d3fbf;
+  --display:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) &{--bg:#121212;--ink:#ededed;--grey:#a0a0a0;--rule:#3a3a3a;--wash:#1e1e1e;--accent:#8fa6ff;color-scheme:dark}
+}
+:root[data-theme="dark"] &{--bg:#121212;--ink:#ededed;--grey:#a0a0a0;--rule:#3a3a3a;--wash:#1e1e1e;--accent:#8fa6ff;color-scheme:dark}
+*{box-sizing:border-box}
+&{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16.5px;line-height:1.9;-webkit-font-smoothing:antialiased}
+.page{max-width:780px;margin:0 auto;padding:0 20px 60px}
+.n{font-family:var(--mono);font-variant-numeric:tabular-nums}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.4}
+h1{font-size:clamp(1.8rem,5vw,2.5rem);font-weight:800}
+h2{font-size:1.45rem;font-weight:800;padding-top:14px;border-top:3px solid var(--ink);margin:52px 0 16px}
+p{margin:0 0 1em;max-width:36em}
+.small{font-size:.86rem;color:var(--grey)}
+
+.mast{border-bottom:1px solid var(--ink);padding:26px 0 12px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:baseline}
+.mast span{font-family:var(--mono);font-size:.78rem;color:var(--grey)}
+.top{padding:26px 0 0}
+.lede{font-family:var(--display);font-size:1.3rem;line-height:1.75;font-weight:600;margin:18px 0 18px;max-width:30em}
+
+.clock{display:flex;gap:22px;flex-wrap:wrap;align-items:baseline;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:12px 0;margin:22px 0}
+.clock .t{font-family:var(--mono);font-size:2rem;font-weight:600;line-height:1;color:var(--accent)}
+.clock .l{font-size:.86rem;color:var(--grey)}
+
+table{width:100%;border-collapse:collapse;font-size:.93rem;line-height:1.65}
+th,td{text-align:left;padding:9px 10px 9px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+thead th{font-size:.78rem;font-weight:400;color:var(--grey);border-bottom:1px solid var(--ink)}
+td.n,th.n{white-space:nowrap}
+.scroll{overflow-x:auto;margin:0 0 1.2em}
+.scroll table{min-width:560px}
+
+svg text{font-family:var(--mono);font-size:11px;fill:var(--grey)}
+svg .v{fill:var(--ink);font-weight:600}
+.gl{stroke:var(--rule);stroke-width:1}
+.pl{fill:none;stroke:var(--ink);stroke-width:2;stroke-linejoin:round;stroke-dasharray:var(--len);animation:draw 2s ease-out both}
+
+
+.levels{position:relative;height:70px;margin:30px 0 26px;min-width:540px}
+.levels .ax{position:absolute;left:0;right:0;top:34px;border-top:1px solid var(--ink)}
+.levels .band{position:absolute;top:28px;height:13px;background:var(--accent);opacity:.22}
+.levels .m{position:absolute;top:26px;height:17px;border-left:1px solid var(--ink)}
+.levels .m span{position:absolute;left:0;transform:translateX(-50%);white-space:nowrap;font-size:.72rem}
+.levels .m .a{top:-20px;font-family:var(--mono)}.levels .m .b{top:20px;color:var(--grey)}
+.levels .m.now{border-left:3px solid var(--accent)}
+
+.tool{border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);padding:18px 0;display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.tool label{display:block;font-size:.9rem;margin-bottom:14px}
+.tool label span{display:flex;justify-content:space-between}
+.tool output{font-family:var(--mono);color:var(--accent)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+select{font:inherit;width:100%;padding:6px 8px;border:1px solid var(--grey);background:var(--bg);color:var(--ink);border-radius:0}
+.out .head{font-family:var(--display);font-size:1.5rem;font-weight:800;line-height:1.4;margin-bottom:8px}
+.scale{position:relative;height:38px;margin:18px 0 6px}
+.scale .ax{position:absolute;left:0;right:0;top:8px;border-top:1px solid var(--ink)}
+.scale .tk{position:absolute;top:4px;height:9px;border-left:1px solid var(--ink)}
+.scale .ptr{position:absolute;top:0;width:9px;height:17px;background:var(--accent);transition:left .45s cubic-bezier(.2,.8,.2,1)}
+.scale .lab{position:absolute;top:18px;font-size:.72rem;color:var(--grey);transform:translateX(-50%);white-space:nowrap}
+
+.phase td:first-child{width:7.5em}
+.phase tr.cur td{background:var(--wash)}
+.phase tr.cur td:first-child{box-shadow:inset 3px 0 0 var(--accent);padding-left:10px}
+.here{display:none;font-size:.72rem;color:var(--accent);font-family:var(--mono)}
+.phase tr.cur .here{display:block}
+
+.chk td:first-child{width:30px}
+.chk input{width:17px;height:17px;accent-color:var(--accent);margin-top:5px}
+.chk tr.done td{color:var(--grey)}
+.prog{font-family:var(--mono);font-size:.82rem;color:var(--accent)}
+
+.hb{position:relative;height:14px;min-width:180px}
+.hb::before{content:"";position:absolute;left:40%;top:-3px;bottom:-3px;border-left:1px solid var(--ink)}
+.hb i{position:absolute;top:0;bottom:0;background:var(--grey);transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.hb i.up{left:40%;background:var(--accent)}.hb i.dn{right:60%}
+
+ol.src{font-size:.84rem;padding-left:1.4em;columns:2;column-gap:30px;line-height:1.6}
+ol.src li{break-inside:avoid;margin-bottom:6px}
+@media (max-width:640px){.tool{grid-template-columns:1fr}ol.src{columns:1}}
+@media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important}}
+
+}
+</style>
+</head>
+<body>
+<div class="tabs" role="tablist" aria-label="表示の切り替え">
+  <button role="tab" id="tab-cards" aria-controls="cards" aria-selected="true">カード版</button>
+  <button role="tab" id="tab-report" aria-controls="report" aria-selected="false">レポート版（文字多め）</button>
+  <small>同じ情報を2つの見せ方で</small>
+</div>
+<div class="view v1" id="cards" role="tabpanel" aria-labelledby="tab-cards">
+
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track" id="tick"></div>
+</div>
+
+<header class="hero wrap">
+  <div class="hero-grid">
+    <div>
+      <div class="stamp">2026年11月17日 午前（日本時間）時点の情報 ／ FY2027 第3四半期（8〜10月期）</div>
+      <h1>NVIDIA決算 直前ブリーフ<br><em>ジェンスン不在で迎える初の決算</em></h1>
+      <p class="lead">数字はスキャンダル前の四半期のものなので、良いのはほぼ前提です。株価を動かすのは、次の四半期の見通しと、暫定CEOコレット・クレスがコールで何を語るかです。</p>
+    </div>
+    <div class="count" aria-live="off">
+      <div class="count-label">決算発表（日本時間 11/18 水 6:20ごろ）まで</div>
+      <div class="count-digits" id="cd">
+        <span class="d" id="cd-h">--</span><small>時間</small>
+        <span class="d" id="cd-m">--</span><small>分</small>
+        <span class="d" id="cd-s">--</span><small>秒</small>
+      </div>
+      <div class="live"><span class="dot"></span><span id="cd-note">コールは 7:00 開始。通常取引は同日 23:30 から</span></div>
+    </div>
+  </div>
+
+  <div class="verdict">
+    <p><strong>結論：</strong>上がる条件は「Q4売上見通しが約1,300億ドル以上」「粗利率の底（71〜72%）が深くならない」「注文のキャンセルなしと来期約70%成長の維持をクレスが明言」の3つがそろうことです。どれかが欠けると、過去4回中3回のように好決算でも売られる形になりやすいです。関連株のNBISは、NVIDIAの数字に加えて「資金支援を絞るかどうか」の発言で別方向に動く可能性があります。</p>
+  </div>
+
+  <div class="tiles">
+    <div class="tile"><span class="k">11/16 終値</span><span class="v">$<span data-count="156.14" data-dec="2">156.14</span></span><span class="s">前日比 <span class="neg num">−4.12%</span>。2025年7月以来の安値</span></div>
+    <div class="tile"><span class="k">10/6の終値高値から</span><span class="v neg">−<span data-count="34.7" data-dec="1">34.7</span>%</span><span class="s"><span class="num">$239.24 → $156.14</span></span></div>
+    <div class="tile"><span class="k">オプションが織り込む値幅</span><span class="v">±<span data-count="9" data-dec="0">9</span>%前後</span><span class="s">情報源により <span class="num">8.3〜9.7%</span>。2024年8月以来の大きさ</span></div>
+    <div class="tile"><span class="k">発表者</span><span class="v" style="font-family:var(--display);font-size:1.25rem;font-weight:900">C. クレス</span><span class="s">CFO兼 暫定CEO（11/12就任）</span></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<section id="situation">
+  <div class="sec-head">
+    <span class="kicker">01 / 現在地</span>
+    <h2>6週間で35%下落した経緯</h2>
+    <p class="lead">下げの原因は3層あります。AI株全体の調整、CEOのスキャンダルと辞任、そして前日に出た輸出規制と資金支援縮小の報道です。業績の悪化はまだ確認されていません。</p>
+  </div>
+  <div class="panel">
+    <div class="chart-scroll"><svg id="price" viewBox="0 0 760 300" width="100%" style="min-width:560px" role="img" aria-label="NVIDIAの主要日の終値推移。10月6日239.24ドルから11月16日156.14ドルまで下落"></svg></div>
+    <p class="note">主要な日の終値だけを結んだ図です。間の日の値動きは省いています。</p>
+    <div class="events">
+      <div><b>11/5</b><span>AI株が全面安。S&P500は−4.4%、NVIDIAは−9.3%で$181.60</span></div>
+      <div><b>11/8</b><span>フアン氏が不倫を認める。取締役会が独立調査を開始</span></div>
+      <div><b>11/12</b><span>フアン氏がCEOと取締役を辞任。クレスCFOが暫定CEOに</span></div>
+      <div><b>11/13</b><span>格下げが相次ぐ。少なくとも10社が買い推奨を取り下げ</span></div>
+      <div><b>11/15</b><span>WSJ「クレスはAI業界への資金支援を絞る見通し」と報道</span></div>
+      <div><b>11/16</b><span>商務省が東南アジア等5か国向けに輸出許可制を発表。取締役会はフアン氏復帰を協議していないとの報道</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="bar">
+  <div class="sec-head">
+    <span class="kicker">02 / 合格ライン</span>
+    <h2>数字のハードル</h2>
+    <p class="lead">帯が会社の見通し、橙の線が市場予想です。毎回3〜5%上振れてきた実績があるので、市場予想ぴったりでは「未達」と受け取られます。</p>
+  </div>
+  <div class="panel">
+    <div class="bars">
+      <div class="bar-row">
+        <div class="bar-name">Q3 売上高<small>前四半期 962億ドル</small></div>
+        <div class="track" data-min="100" data-max="118">
+          <div class="zone" data-a="105.84" data-b="110.16"></div>
+          <div class="pin cons grow" data-x="109.1" data-l="予想 1,091億"></div>
+          <div class="pin grow low" data-x="112.6" data-l="UBS想定 1,121〜1,131億"></div>
+        </div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-name">Q3 粗利率<small>前四半期 75.0%</small></div>
+        <div class="track" data-min="72" data-max="76">
+          <div class="zone" data-a="73.5" data-b="74.5"></div>
+          <div class="pin cons grow" data-x="74" data-l="見通し中央 74.0%"></div>
+        </div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-name">Q3 EPS（調整後）<small>前年同期 $1.30</small></div>
+        <div class="track" data-min="2.2" data-max="2.8">
+          <div class="zone" data-a="2.32" data-b="2.47"></div>
+          <div class="pin cons grow" data-x="2.48" data-l="予想 $2.47〜2.49"></div>
+          <div class="pin grow low" data-x="2.60" data-l="ウィスパー $2.60"></div>
+        </div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-name">Q4 売上見通し<small>最重要。会社はまだ未公表</small></div>
+        <div class="track" data-min="105" data-max="138">
+          <div class="pin cons grow" data-x="124.95" data-l="予想 約1,250億"></div>
+          <div class="pin grow low" data-x="130" data-l="UBS想定 約1,300億"></div>
+        </div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-name">Q4 粗利率見通し<small>8月に示した「底」</small></div>
+        <div class="track" data-min="69" data-max="75">
+          <div class="zone" data-a="71" data-b="72"></div>
+          <div class="pin grow low" data-x="72.5" data-l="来期は72〜73%へ回復の計画"></div>
+        </div>
+      </div>
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--accent-soft);border:1px solid var(--accent)"></i>会社の見通しレンジ</span>
+      <span><i style="background:var(--warn)"></i>市場予想</span>
+      <span><i style="background:var(--ink)"></i>強気側の想定</span>
+    </div>
+    <p class="note" style="margin-top:12px">データセンター売上の市場予想は約1,018.5億ドル（ブルームバーグ集計）。ウィスパーは辞任前の11月上旬時点の数字です。</p>
+  </div>
+</section>
+
+<section id="scenarios">
+  <div class="sec-head">
+    <span class="kicker">03 / シナリオ</span>
+    <h2>上がる形、下がる形</h2>
+    <p class="lead">値幅の目安はInvesting.comが過去の反応から置いた試算で、予測ではありません。</p>
+  </div>
+  <div class="scen">
+    <div class="card up">
+      <span class="pill">強い</span>
+      <h3>見通しが上振れ、不安が解ける</h3>
+      <div class="move pos">+6% 〜 +10%</div>
+      <ul>
+        <li>Q4売上見通しが約1,300億ドル以上</li>
+        <li>粗利率の底が71〜72%のまま</li>
+        <li>キャンセルなし、来期約70%成長を維持</li>
+        <li>Rubinの量産が計画どおり</li>
+      </ul>
+      <p class="note">35%下げた後なので、売り方の買い戻しが加わりやすい局面です。</p>
+    </div>
+    <div class="card mid">
+      <span class="pill">予想どおり</span>
+      <h3>数字は良いが驚きがない</h3>
+      <div class="move">−4% 〜 +4%</div>
+      <ul>
+        <li>Q4売上見通しが約1,250億ドル前後</li>
+        <li>粗利率は計画どおり</li>
+        <li>CEO探しや輸出規制への回答が曖昧</li>
+      </ul>
+      <p class="note">材料出尽くしの売りが出やすい形です。上げても戻り売りに押されるとの見方があります。</p>
+    </div>
+    <div class="card down">
+      <span class="pill">弱い</span>
+      <h3>見通しが予想を下回る</h3>
+      <div class="move neg">−5% 〜 −18%</div>
+      <ul>
+        <li>Q4見通し1,180〜1,210億：−5〜−9%</li>
+        <li>Q4見通し1,080〜1,120億：−12〜−18%（$128〜137）</li>
+        <li>粗利率の底が71%を割る</li>
+        <li>顧客の様子見や資金支援の巻き戻し</li>
+      </ul>
+      <p class="note">52週安値 $148.80 を割ると新安値です。</p>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:16px">
+    <h3>株価の目安となる水準</h3>
+    <div style="overflow-x:auto"><div class="range" id="range" style="min-width:560px">
+      <div class="range-axis"></div>
+      <div class="range-band" data-a="141.0" data-b="171.2"></div>
+      <div class="mk" data-x="132.5"><span class="t">$128〜137</span><span class="b">大幅未達の試算</span></div>
+      <div class="mk" data-x="148.8"><span class="t">$148.80</span><span class="b">52週安値</span></div>
+      <div class="mk now" data-x="156.14"><span class="t">$156.14</span><span class="b">現在</span></div>
+      <div class="mk" data-x="163"><span class="t">$163</span><span class="b">11/16高値</span></div>
+      <div class="mk" data-x="171.2"><span class="t">$171</span><span class="b">値幅上限</span></div>
+    </div></div>
+    <p class="note" style="margin-top:30px">青い帯はオプションが織り込む値幅（±9.67%で計算した約$141〜171）です。</p>
+  </div>
+</section>
+
+<section id="judge">
+  <div class="sec-head">
+    <span class="kicker">04 / 判定ツール</span>
+    <h2>発表された数字を入れて判定する</h2>
+    <p class="lead">6:20に出た数字と、コールの印象を入れてください。初期値は市場予想です。配点はこのページの基準を単純に点数化した目安で、株価を保証するものではありません。</p>
+  </div>
+  <div class="judge">
+    <div class="panel ctl">
+      <label for="j-q4"><span>Q4 売上見通し（中央値）<output id="o-q4"></output></span>
+        <input type="range" id="j-q4" min="105" max="140" step="0.5" value="125"></label>
+      <label for="j-rev"><span>Q3 売上高<output id="o-rev"></output></span>
+        <input type="range" id="j-rev" min="104" max="116" step="0.1" value="109.1"></label>
+      <label for="j-gm"><span>Q3 粗利率<output id="o-gm"></output></span>
+        <input type="range" id="j-gm" min="72" max="76" step="0.1" value="74"></label>
+      <label for="j-gm4">Q4 粗利率の見通し
+        <select id="j-gm4">
+          <option value="0">71〜72%（8月の計画どおり）</option>
+          <option value="1">72%以上（計画より良い）</option>
+          <option value="-3">71%未満（底が深くなった）</option>
+        </select></label>
+      <label for="j-tone">コールの印象（7:00以降）
+        <select id="j-tone">
+          <option value="0">まだ聞いていない／中立</option>
+          <option value="2">キャンセルなしと来期約70%成長を明言</option>
+          <option value="-3">慎重で曖昧。顧客の様子見を示唆</option>
+        </select></label>
+    </div>
+    <div class="result" id="res" data-s="mid">
+      <span class="note">判定</span>
+      <div class="big" id="res-t"></div>
+      <div class="gauge" aria-hidden="true"><i id="res-g"></i></div>
+      <p id="res-d"></p>
+      <p class="note" id="res-s"></p>
+    </div>
+  </div>
+</section>
+
+<section id="timeline">
+  <div class="sec-head">
+    <span class="kicker">05 / 当日の流れ</span>
+    <h2>時間ごとに見るもの</h2>
+    <p class="lead">時刻は日本時間です。チェックを入れながら追えます。</p>
+  </div>
+  <div class="tl">
+    <div class="tl-item">
+      <span class="when">11/18 6:00 通常取引が終了</span>
+      <p>発表前の終値を控えておきます。前日の高値$163と52週安値$148.80が、時間外での最初の目安になります。</p>
+    </div>
+
+    <div class="tl-item key">
+      <span class="when">6:20ごろ 決算リリース</span>
+      <h3>見る順番は「来期見通し → 粗利率 → 今期の数字」</h3>
+      <ul class="checks">
+        <li><input type="checkbox" id="c1"><label for="c1"><b>Q4売上見通し</b>：<span class="good">1,300億ドル以上</span>なら強い。約1,250億で予想どおり。<span class="bad">1,200億未満</span>は弱い</label></li>
+        <li><input type="checkbox" id="c2"><label for="c2"><b>Q4粗利率見通し</b>：71〜72%なら計画どおり。<span class="bad">71%未満</span>はメモリ費用の悪化を意味する</label></li>
+        <li><input type="checkbox" id="c3"><label for="c3"><b>Q3売上高</b>：会社見通しの上限<span class="good">1,102億ドル超</span>が合格。1,090億前後は予想どおり</label></li>
+        <li><input type="checkbox" id="c4"><label for="c4"><b>Q3粗利率</b>：<span class="good">74%以上</span>か</label></li>
+        <li><input type="checkbox" id="c5"><label for="c5"><b>データセンター売上</b>：予想は約1,018.5億ドル</label></li>
+        <li><input type="checkbox" id="c6"><label for="c6"><b>EPS</b>：予想$2.47〜2.49。ウィスパーは$2.60</label></li>
+        <li><input type="checkbox" id="c7"><label for="c7"><b>リリース本文</b>：CEO選定、輸出規制の影響、自社株買いに触れているか</label></li>
+      </ul>
+      <p class="note">最初の数分の値動きは当てになりません。8月は発表直後に一時3%下げ、コール中の来期見通しで約5%高へ反転しました。</p>
+    </div>
+
+    <div class="tl-item key">
+      <span class="when">7:00 カンファレンスコール</span>
+      <h3>クレスの冒頭発言と、質疑での答え方</h3>
+      <ul class="checks">
+        <li><input type="checkbox" id="k1"><label for="k1"><b>来期（FY2028）約70%成長</b>の目安を維持するか。ここが崩れると見通し全体が疑われる</label></li>
+        <li><input type="checkbox" id="k2"><label for="k2"><b>注文のキャンセルや延期</b>の有無。辞任後に顧客の姿勢が変わっていないと具体的に言うか</label></li>
+        <li><input type="checkbox" id="k3"><label for="k3"><b>Vera Rubin</b>の量産状況。ラック部品の遅れがどの四半期に響くか</label></li>
+        <li><input type="checkbox" id="k4"><label for="k4"><b>粗利率</b>：メモリ価格の見方と、来期第1四半期からの値上げが予定どおりか</label></li>
+        <li><input type="checkbox" id="k5"><label for="k5"><b>資金支援の方針</b>：ネオクラウド向けの保証や出資を絞るのか。NBISやCoreWeaveに直結する</label></li>
+        <li><input type="checkbox" id="k6"><label for="k6"><b>新しい輸出規制</b>：シンガポールなど5か国向けの売上規模と、見通しに織り込んだかどうか</label></li>
+        <li><input type="checkbox" id="k7"><label for="k7"><b>CEO選定の時期</b>と調査の見通し。答えを避けるか、期限を示すか</label></li>
+      </ul>
+      <p class="note">クレスはCFOとして長年コールで数字を説明してきました。問われるのは数字の正確さより、戦略と顧客関係が続くという説得力です。</p>
+    </div>
+
+    <div class="tl-item">
+      <span class="when">8:00ごろ〜 コール終了後</span>
+      <p>時間外の値動きが落ち着きます。アナリストの初期コメントと、関連株（NBIS、CoreWeave、AMD、メモリ株）の時間外の反応を確認します。</p>
+    </div>
+
+    <div class="tl-item">
+      <span class="when">11/18 23:30 通常取引の開始</span>
+      <p>出来高を伴う本当の評価はここからです。8月は翌日+8.7%のあと、翌々日に−4.6%と反落しました。2日目まで見てから判断しても遅くありません。</p>
+    </div>
+  </div>
+</section>
+
+<section id="action">
+  <div class="sec-head">
+    <span class="kicker">06 / 動き方</span>
+    <h2>関連株を持っている場合の考え方</h2>
+    <p class="lead">私は投資助言の資格を持つ立場ではないので、売買の指示ではなく、判断の材料と手順を整理します。最終的な判断はご自身で行ってください。</p>
+  </div>
+
+  <div class="two">
+    <div class="panel">
+      <h3 style="margin-bottom:10px">発表前に決めておくこと</h3>
+      <ol class="rules">
+        <li><b>損切りラインを先に数字で決める。</b>NBISは11/16にNVIDIAの約1.8倍動きました（−7.55%対−4.12%）。NVIDIAが−10%なら、NBISはそれ以上動く前提で考えます。</li>
+        <li><b>信用の維持率を確認する。</b>現物を担保に信用を使う場合、下落で担保価値も同時に減ります。発表をまたぐ前に余力を見ておきます。</li>
+        <li><b>買い増しの条件を決める。</b>価格だけでなく「コールで資金支援の話がどう出たか」を条件に入れます。</li>
+      </ol>
+    </div>
+    <div class="panel">
+      <h3 style="margin-bottom:10px">発表後に避けたいこと</h3>
+      <ol class="rules">
+        <li><b>6:20の初動を追いかけない。</b>時間外は板が薄く、コールで反転することがあります。</li>
+        <li><b>NVIDIAの上げをそのままNBISに当てはめない。</b>クレスが資金支援を絞ると明言すれば、NVIDIAは上がってNBISは下がる組み合わせもあり得ます。</li>
+        <li><b>下げの途中で信用を使って買い下がらない。</b>NBISは$153.74より下では値動きが増幅されやすい状態と推定されています。</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="panel tbl" style="margin-top:14px">
+    <table>
+      <thead><tr><th>展開</th><th>NVIDIA</th><th>NBISへの波及</th><th>考えられる対応</th></tr></thead>
+      <tbody>
+        <tr><td><b class="pos">強い</b></td><td>時間外で大きく上昇</td><td>反発しやすい。資金支援の発言が穏当なら上げ幅が広がる</td><td>保有継続。買い増すなら通常取引で値が保たれるのを見てから</td></tr>
+        <tr><td><b class="pos">強い</b>だが資金支援は縮小</td><td>上昇</td><td>上値が重い。資金調達の不安が残る</td><td>NVIDIAの上げに頼らず、NBIS自体の値動きで判断する</td></tr>
+        <tr><td><b>予想どおり</b></td><td>小幅な上下</td><td>方向感が出にくい</td><td>事前に決めた分割買いと損切りのラインを変えない</td></tr>
+        <tr><td><b class="neg">弱い</b></td><td>$148.80割れを試す</td><td>$100の攻防。割れると下げが加速するおそれ</td><td>決めた損切りラインに達したら実行する。新規の買いは下げ止まりを確認してから</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="two" style="margin-top:14px">
+    <div class="panel">
+      <h3>NBIS固有の論点</h3>
+      <ul class="rules" style="margin-top:10px">
+        <li>11/16終値は<span class="num">$107.13（−7.55%）</span>。11/12の決算後に約17%下げ、その後も続落しています。</li>
+        <li>Q3売上は<span class="num">9.808億ドル</span>で予想の<span class="num">9.075億ドル</span>を上回りました。ただし約3.25億ドルは一時的な売上です。</li>
+        <li>下げた理由は、データセンターの遅れで2026年売上の一部が翌年にずれることと、設備投資の大きさです。2027年の計画は<span class="num">400〜450億ドル</span>で、時価総額<span class="num">約294億ドル</span>の約1.4〜1.5倍にあたります。</li>
+        <li>NVIDIAはNebiusの出資者です。WSJの報道どおり支援が絞られると、資金調達の条件が悪くなります。一方で、顧客からの前払いはすでに増えているとの指摘もあります。</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>過去5回の決算翌日の反応</h3>
+      <div class="hist" id="hist">
+        <div class="hb"><i class="n" data-h="0.8"></i><span data-v="-0.8">−0.8%</span><em>25年8月</em></div>
+        <div class="hb"><i class="n" data-h="3.2"></i><span data-v="-3.2">−3.2%</span><em>25年11月</em></div>
+        <div class="hb"><i class="n" data-h="5.5"></i><span data-v="-5.5">−5.5%</span><em>26年2月</em></div>
+        <div class="hb"><i class="n" data-h="1.8"></i><span data-v="-1.8">−1.8%</span><em>26年5月</em></div>
+        <div class="hb"><i class="p" data-h="8.7"></i><span data-v="8.7">+8.7%</span><em>26年8月</em></div>
+      </div>
+      <p class="note" style="margin-top:38px">5回とも予想を上回る内容でした。唯一上げた8月も、翌々日に−4.6%です。今回は発表前に大きく下げている点が過去と違います。</p>
+    </div>
+  </div>
+</section>
+
+<section id="ripple">
+  <div class="sec-head">
+    <span class="kicker">07 / 波及</span>
+    <h2>関連株への広がり方</h2>
+    <p class="lead">「報道」は情報源で確認できた事実、「推論」は私がそこから導いた見立てです。</p>
+  </div>
+  <div class="panel tbl">
+    <table>
+      <thead><tr><th>分野</th><th>11/16の動き</th><th>決算で効く論点</th><th>区分</th></tr></thead>
+      <tbody>
+        <tr><td><b>ネオクラウド</b><br><span class="note">NBIS、CoreWeave、IREN</span></td><td><span class="num neg">NBIS −7.6%<br>CoreWeave −6.1%</span></td><td>資金支援の方針が最重要。NVIDIAの申告書には約360億ドルのクラウド向け保証が記載されている</td><td><span class="tag">報道</span></td></tr>
+        <tr><td><b>AI半導体</b><br><span class="note">AMD、Broadcom</span></td><td><span class="num neg">AMD −5.6%<br>Broadcom −3.9%</span></td><td>需要の強さが確認されれば連れ高。輸出規制はAMDにも同じく適用される</td><td><span class="tag">報道</span></td></tr>
+        <tr><td><b>メモリ</b><br><span class="note">SK Hynix、Kioxia、SanDisk、Micron</span></td><td>—</td><td>NVIDIAの粗利率を押し下げているのはメモリ価格の上昇。「メモリ費用がさらに上がる」という発言は、NVIDIAには悪材料でもメモリ株には追い風になり得る</td><td><span class="tag">推論</span></td></tr>
+        <tr><td><b>光通信・接続</b><br><span class="note">CRDO、AAOI、CIEN</span></td><td>—</td><td>Rubinのラック出荷の時期と、ネットワーク関連売上の伸び</td><td><span class="tag">推論</span></td></tr>
+        <tr><td><b>電力</b><br><span class="note">Bloom Energy</span></td><td>—</td><td>データセンター建設の計画が続くかどうか。Q4見通しと来期成長率が間接的な指標になる</td><td><span class="tag">推論</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="two" style="margin-top:14px">
+    <div class="panel">
+      <h3>需要側の裏付け</h3>
+      <ul class="rules" style="margin-top:10px">
+        <li>大手4社（Microsoft、Alphabet、Amazon、Meta）の7〜9月期の設備投資は合計<span class="num">2,019億ドル</span>で、前年比<span class="num">+107.6%</span>でした。</li>
+        <li>10〜12月期はさらに増える見通しが各社から示されています。</li>
+        <li>NVIDIAは8月時点で、需要の約7割しか供給できていないと説明していました。</li>
+        <li>長期の供給契約は7月末で<span class="num">2,790億ドル</span>と、3か月前の<span class="num">1,190億ドル</span>から倍以上に増えています。</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>決算では消えないリスク</h3>
+      <ul class="rules" style="margin-top:10px">
+        <li>正式なCEOが未定。財務長官は外部からの起用を求めています。</li>
+        <li>外部の法律事務所による調査、議会の調査、株主訴訟が続いています。</li>
+        <li>新しい輸出規制はQ3の数字には影響しにくいものの、見通しの重しになり得ます。</li>
+        <li>金利：12月9日のFRB会合で0.25%の利上げを先物市場が91%織り込んでいるとの報道があります。</li>
+        <li>空売り調査会社は中国向けの不正な迂回販売が売上の大きな割合を占めると主張していますが、裏付けは確認されていません。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="views">
+  <div class="sec-head">
+    <span class="kicker">08 / 見方の対立</span>
+    <h2>アナリストは割れている</h2>
+  </div>
+  <div class="two">
+    <div class="panel">
+      <h3 class="pos">強気側</h3>
+      <ul class="rules" style="margin-top:10px">
+        <li><b>UBS（買い）</b>：売上は予想を30〜40億ドル上回り、Q4見通しは約1,300億ドルと想定。市場の織り込みは厳しすぎるとの立場。</li>
+        <li><b>みずほ（アウトパフォーム）</b>：目標株価を$250から$220へ下げたが、推奨は維持。</li>
+        <li><b>Morningstar</b>：適正価値を$310と評価。</li>
+        <li>株価収益率は約17.5倍（11/13時点、Investing.com）。集計方法により数字は異なります。</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3 class="neg">慎重側</h3>
+      <ul class="rules" style="margin-top:10px">
+        <li><b>Bernstein</b>：中立へ格下げ。目標株価を$400から$200へ。業績は健全だが、経営の不確実さが大きいとの判断。</li>
+        <li><b>HSBC</b>：中立へ格下げ。目標株価を$365から$170へ。後任が決まるまで株価は苦戦するとの見方。</li>
+        <li><b>Zacks</b>：今期は辞任前に計上済みなので強いはず。ただし来期の利益成長予想は半減の可能性もあると指摘。</li>
+        <li>Vital Knowledge：上昇しても戻り売りに遭う可能性を警告。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="sources">
+  <div class="sec-head">
+    <span class="kicker">09 / 出典</span>
+    <h2>参照した情報源</h2>
+    <p class="lead">数字は情報源によって少しずつ違います。売上予想は1,087〜1,094億ドル、EPS予想は$2.47〜2.49、織り込み値幅は8.3〜9.7%の幅があります。</p>
+  </div>
+  <ol class="src">
+    <li><a href="https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000082/nvidiaannouncesceotransiti.htm">NVIDIA 8-K：CEO交代の発表（SEC）</a></li>
+    <li><a href="https://www.implicator.ai/nvidia-stock-16-month-low-q3-earnings/">Implicator：11/16の終値、輸出規制、取締役会の報道</a></li>
+    <li><a href="https://www.kiplinger.com/news/live/nvidia-earnings-live-updates-and-commentary-november-2026">Kiplinger：決算ライブ更新（UBS、Bernstein、Zacksの見解）</a></li>
+    <li><a href="https://www.investing.com/news/stock-market-news/nvidia-earnings-scenarios-what-a-guidance-cut-could-mean-for-the-stock-93CH-5030809">Investing.com：見通し別の株価シナリオ</a></li>
+    <li><a href="https://fourweekmba.com/ai-nvidias-q3-guide-is-108b-12-above-q2-what-17-nov-tests/">FourWeekMBA：Q3見通し1,080億ドルの詳細</a></li>
+    <li><a href="https://fourweekmba.com/ai-nvidia-earnings-tuesday-the-bar-is-2-49-after-4-eps-beats/">FourWeekMBA：EPS予想と見通しレンジ</a></li>
+    <li><a href="https://finviz.com/news/420663/nvidias-vera-rubin-ramp-meets-a-margin-reset-as-shares-slide-toward-range-lows">Earnings Whispers（Finviz）：粗利率とウィスパー</a></li>
+    <li><a href="https://www.techtarget.com/news/Nvidia-price-hike-will-raise-IT-costs-for-all-analysts-say/856987/">TechTarget：粗利率の底と値上げの計画</a></li>
+    <li><a href="https://www.home.saxo/content/articles/equities/nvidia-earnings-ai-boom-meets-margin-test-27082026">Saxo：8月決算の整理（供給は需要の約7割）</a></li>
+    <li><a href="https://finance.yahoo.com/markets/options/articles/nvidia-q3-earnings-preview-options-205720323.html">Yahoo Finance／TipRanks：オプションの織り込み値幅</a></li>
+    <li><a href="https://www.benzinga.com/markets/options/26/11/63277522/nvidia-earnings-without-jensen-huang-could-trigger-341-billion-stock-swing-as-options-traders-brace-for-volatility">Benzinga：織り込み値幅8.27%</a></li>
+    <li><a href="https://www.nbcnews.com/tech/tech-news/us-closes-loophole-let-chinese-companies-use-top-ai-chips-rcna609634">NBC News：商務省の新しい輸出規則</a></li>
+    <li><a href="https://thenextweb.com/news/nvidia-financing-kress-neoclouds-upfront-payments">The Next Web：資金支援縮小の報道（WSJ引用）</a></li>
+    <li><a href="https://finance.yahoo.com/markets/stocks/articles/nebius-stocks-sink-8-nvidias-175002087.html">Yahoo Finance：Nebiusの下落と設備投資計画</a></li>
+    <li><a href="https://www.thestreet.com/investing/nebius-nbis-stock-sinks-18-despite-record-quarter">TheStreet：Nebius Q3決算と株価の反応</a></li>
+    <li><a href="https://stockanalysis.com/stocks/nbis/">StockAnalysis：NBISの11/16終値</a></li>
+    <li><a href="https://walnutinvest.com/stats/ai-capex-statistics">Walnut：大手4社の設備投資の推移</a></li>
+    <li><a href="https://cryptobriefing.com/nvidia-q3-fy2027-preview-279-billion-supply/">Crypto Briefing：供給契約2,790億ドル</a></li>
+    <li><a href="https://www.cnbc.com/2026/11/12/jensen-huang-nvidia-affair-ceo.html">CNBC：辞任後のアナリストの見解</a></li>
+    <li><a href="https://mlq.ai/news/hsbc-downgrades-nvidia-to-hold-and-cuts-its-price-target-to-170-from-365-citing-ceo-succession-and-export-risk/">MLQ：HSBCの格下げ</a></li>
+    <li><a href="https://cnbc.com/2026/11/16/nvidia-gets-two-more-price-target-cuts-from-analysts-ahead-of-earnings.html">CNBC：みずほなどの目標株価引き下げ</a></li>
+    <li><a href="https://www.morningstar.com/stocks/what-watch-nvidia-earnings-spy-scandal-data-center-concerns-take-center-stage">Morningstar：決算の注目点と適正価値</a></li>
+    <li><a href="https://nasdaq.com/articles/history-says-nvidia-going-disappoint-wall-street-after-aug-26">Nasdaq：過去の決算後の値動き</a></li>
+    <li><a href="https://ts2.tech/en/nvidia-stock-drops-4-6-erasing-253-billion-as-margin-risk-overshadows-108-billion-guide/">TS2：8月決算後の+8.74%と−4.6%</a></li>
+    <li><a href="https://political.org/2026/11/05/ai-stock-wipeout-sends-sp-500-down-4-4-in-worst-day-since-april-2025-erasing-post-midterm-rally/">Political.org：11/5のAI株急落</a></li>
+  </ol>
+</section>
+
+</main>
+
+<footer class="wrap">
+  このページは公開情報を整理したもので、特定の売買を勧めるものではありません。株価やオプションの数字は時点によって変わります。発表後は実際の数字で確かめてください。
+</footer>
+
+</div>
+<div class="view v2" id="report" role="tabpanel" aria-labelledby="tab-report" hidden>
+<div class="page">
+
+<div class="mast">
+  <span>NVIDIA（NVDA）FY2027 第3四半期決算</span>
+  <span>2026年11月17日 午前（日本時間）時点</span>
+</div>
+
+<div class="top">
+  <h1>NVIDIA決算 直前ブリーフ</h1>
+  <p class="lede">明日の朝は、来期の売上見通しが1,300億ドルに届くかどうかでほぼ決まります。</p>
+  <p>今回の数字は8〜10月の分なので、フアン氏の辞任（11月12日）より前に稼いだ売上です。だから今期の実績が良くても誰も驚きません。市場が知りたいのは11〜1月期の見通しと、暫定CEOになったコレット・クレスが「注文は減っていない」と自分の口で言えるかの2つです。</p>
+  <p>市場予想は約1,250億ドル、UBSは約1,300億ドルを見込んでいます。過去4回、NVIDIAの見通しは毎回予想を上回りましたが、そのうち3回は株価が下がりました。予想を少し超える程度では買われない株になっています。</p>
+
+  <div class="clock">
+    <div><div class="t" id="r-cd">--:--:--</div><div class="l" id="r-cdl">決算発表（11/18 水 6:20ごろ）まで</div></div>
+    <div><div class="t n" style="color:var(--ink)">$156.14</div><div class="l">11/16終値。前日比−4.12%</div></div>
+    <div><div class="t n" style="color:var(--ink)">±9%</div><div class="l">オプションが織り込む値幅（8.3〜9.7%）</div></div>
+  </div>
+</div>
+
+<h2>株価は6週間で35%下げたが、業績が悪化した数字はまだ出ていない</h2>
+<p>10月6日の終値239.24ドルから、11月16日は156.14ドルです。下げた理由は順番に、AI株全体の急落、フアン氏の不倫と辞任、そして前日に出た輸出規制です。11月16日の4%安が輸出規制のせいか、取締役会の報道のせいかは、同じ日に重なったので切り分けられません。</p>
+<div class="scroll"><svg id="r-price" viewBox="0 0 760 270" width="100%" style="min-width:540px" role="img" aria-label="主要日の終値。10月6日239.24ドル、11月16日156.14ドル"></svg></div>
+<div class="scroll">
+<table>
+  <thead><tr><th>日付</th><th>出来事</th><th class="n">終値</th></tr></thead>
+  <tbody>
+    <tr><td class="n">11/5</td><td>AI関連株が全面安。S&P500は−4.4%、NVIDIAは−9.3%</td><td class="n">$181.60</td></tr>
+    <tr><td class="n">11/8</td><td>フアン氏が不倫を認め、取締役会が独立調査を始める（日曜）</td><td class="n">—</td></tr>
+    <tr><td class="n">11/10</td><td>上院議員が辞任を要求。2日間で約10%安</td><td class="n">$168.89</td></tr>
+    <tr><td class="n">11/12</td><td>フアン氏がCEOと取締役を辞任。クレスCFOが暫定CEOを兼ねる</td><td class="n">—</td></tr>
+    <tr><td class="n">11/13</td><td>HSBC、Bernsteinなど少なくとも10社が買い推奨を取り下げ</td><td class="n">$162.85</td></tr>
+    <tr><td class="n">11/15</td><td>WSJが「クレスはAI業界への資金支援を絞る見通し」と報道（日曜）</td><td class="n">—</td></tr>
+    <tr><td class="n">11/16</td><td>商務省がシンガポール、マレーシア、タイ、インドネシア、ブラジル向けを許可制に。「取締役会はフアン氏の復帰を協議していない」との報道</td><td class="n">$156.14</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="small">グラフは終値がわかっている日だけを結んでいます。</p>
+
+<h2>合格ラインは市場予想より3〜4%上にある</h2>
+<p>NVIDIAは毎回、売上で予想を3〜5%超えてきました。8月は予想919億ドルに対して962億ドルです。投資家はそれを前提にしているので、右端の列まで届いてやっと「良かった」と受け取られます。</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>項目</th><th class="n">会社の見通し</th><th class="n">市場予想</th><th class="n">買われる水準</th></tr></thead>
+  <tbody>
+    <tr><td>Q4売上見通し（11〜1月期）</td><td class="n">未公表</td><td class="n">約1,250億ドル</td><td class="n">1,300億ドル以上</td></tr>
+    <tr><td>Q4粗利率の見通し</td><td class="n">71〜72%</td><td class="n">—</td><td class="n">71%を割らない</td></tr>
+    <tr><td>Q3売上高</td><td class="n">1,058〜1,102億ドル</td><td class="n">約1,091億ドル</td><td class="n">1,121〜1,131億ドル</td></tr>
+    <tr><td>Q3粗利率</td><td class="n">73.5〜74.5%</td><td class="n">74.0%</td><td class="n">74%以上</td></tr>
+    <tr><td>Q3データセンター売上</td><td class="n">—</td><td class="n">約1,018.5億ドル</td><td class="n">わからない</td></tr>
+    <tr><td>Q3 EPS（調整後）</td><td class="n">$2.32〜2.47</td><td class="n">$2.47〜2.49</td><td class="n">$2.60前後</td></tr>
+  </tbody>
+</table>
+</div>
+<p>粗利率の話を補足します。8月の決算でクレスは、メモリの値上がりで粗利率が75%から下がり、Q4に71〜72%で底を打ち、来期は72〜73%に戻ると説明しました。8月に株価が翌々日4.6%下げたのはこの説明が原因です。今回、底が71%より下にずれると同じことが起きます。</p>
+<p class="small">Q3売上の「買われる水準」はUBSの想定（予想を30〜40億ドル上回る）から計算。EPSの2.60ドルはEarnings Whispersの非公式な期待値で、辞任前の時点の数字です。</p>
+
+<h2>Q4見通しが1,200億ドル前後にとどまると、試算では140ドル台まで下げる</h2>
+<p>Investing.comが過去の反応をもとに置いた試算を表にしました。1社の目安なので、この幅に収まる保証はありません。</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>Q4売上見通し</th><th>予想との差</th><th class="n">株価の反応（試算）</th><th>補足</th></tr></thead>
+  <tbody>
+    <tr><td class="n">約1,300億ドル</td><td class="n">+4%</td><td class="n">+6〜+10%</td><td>クレスの説明が安心できる内容だった場合</td></tr>
+    <tr><td class="n">約1,250億ドル</td><td class="n">0%</td><td class="n">−4〜+4%</td><td>材料が出尽くして売られやすい</td></tr>
+    <tr><td class="n">1,180〜1,210億ドル</td><td class="n">−3〜−6%</td><td class="n">−5〜−9%</td><td>52週安値148.80ドルを試す</td></tr>
+    <tr><td class="n">1,080〜1,120億ドル</td><td class="n">−10〜−14%</td><td class="n">−12〜−18%</td><td>128〜137ドル。前期比でほぼ横ばいの見通し</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="scroll">
+  <div class="levels" id="r-lv">
+    <div class="ax"></div>
+    <div class="band" data-a="141.0" data-b="171.2"></div>
+    <div class="m" data-x="132.5"><span class="a">$128〜137</span><span class="b">最悪の試算</span></div>
+    <div class="m" data-x="148.8"><span class="a">$148.80</span><span class="b">52週安値</span></div>
+    <div class="m now" data-x="156.14"><span class="a">$156.14</span><span class="b">現在</span></div>
+    <div class="m" data-x="163"><span class="a">$163</span><span class="b">11/16高値</span></div>
+    <div class="m" data-x="171.2"><span class="a">$171</span><span class="b">値幅の上端</span></div>
+  </div>
+</div>
+<p class="small">青い帯はオプションが織り込む値幅（±9.67%で約141〜171ドル）。</p>
+
+<h2>発表された数字を入れると、強いか弱いかの目安が出る</h2>
+<p>初期値は市場予想です。6:20に数字が出たらスライダーを動かしてください。配点は上の2つの表を私が点数にしただけのものです。</p>
+<div class="tool">
+  <div>
+    <label for="r-q4"><span>Q4売上見通し<output id="r-oq4"></output></span><input type="range" id="r-q4" min="105" max="140" step="0.5" value="125"></label>
+    <label for="r-rev"><span>Q3売上高<output id="r-orev"></output></span><input type="range" id="r-rev" min="104" max="116" step="0.1" value="109.1"></label>
+    <label for="r-gm"><span>Q3粗利率<output id="r-ogm"></output></span><input type="range" id="r-gm" min="72" max="76" step="0.1" value="74"></label>
+    <label for="r-gm4">Q4粗利率の見通し
+      <select id="r-gm4"><option value="0">71〜72%（8月の説明どおり）</option><option value="1">72%以上</option><option value="-3">71%未満</option></select></label>
+    <label for="r-tone">コールの印象（7:00以降に選ぶ）
+      <select id="r-tone"><option value="0">まだ聞いていない</option><option value="2">キャンセルなし、来期70%成長も維持と明言</option><option value="-3">答えが曖昧。顧客の様子見をにおわせた</option></select></label>
+  </div>
+  <div class="out">
+    <div class="small">判定</div>
+    <div class="head" id="r-rt"></div>
+    <div class="scale">
+      <div class="ax"></div>
+      <div class="tk" style="left:50%"></div><div class="tk" style="left:63%"></div><div class="tk" style="left:80.4%"></div>
+      <div class="ptr" id="r-ptr"></div>
+      <span class="lab" style="left:25%">弱い</span><span class="lab" style="left:56.5%">予想どおり</span><span class="lab" style="left:71.7%">やや強い</span><span class="lab" style="left:90%">強い</span>
+    </div>
+    <p id="r-rd" style="margin-top:14px"></p>
+    <p class="small" id="r-rs"></p>
+  </div>
+</div>
+
+<h2>6:20は見通しと粗利率、7:00は注文と資金支援の話を聞く</h2>
+<p>時刻は日本時間です。いまの時間帯の行に印がつきます。</p>
+<div class="scroll">
+<table class="phase" id="r-phase">
+  <tbody>
+    <tr data-from="0" data-to="2026-11-18T06:00:00+09:00"><td class="n">〜11/18 6:00<span class="here">いまここ</span></td><td>損切りの価格と、信用の維持率を確認しておく時間です。発表後は考える余裕がありません。</td></tr>
+    <tr data-from="2026-11-18T06:00:00+09:00" data-to="2026-11-18T06:20:00+09:00"><td class="n">6:00<span class="here">いまここ</span></td><td>通常取引が終わります。終値を控えてください。時間外の値動きはこの価格と比べます。</td></tr>
+    <tr data-from="2026-11-18T06:20:00+09:00" data-to="2026-11-18T07:00:00+09:00"><td class="n">6:20ごろ<span class="here">いまここ</span></td><td>決算リリース。下の「6:20の確認項目」を上から順に見ます。8月は発表直後に3%下げ、コールが始まってから5%高に反転したので、最初の数分の値動きでは動かないほうが安全です。</td></tr>
+    <tr data-from="2026-11-18T07:00:00+09:00" data-to="2026-11-18T08:00:00+09:00"><td class="n">7:00<span class="here">いまここ</span></td><td>カンファレンスコール。冒頭10〜15分がクレスの説明で、そのあとがアナリストの質問です。株価が動くのは質問への答え方のほうです。</td></tr>
+    <tr data-from="2026-11-18T08:00:00+09:00" data-to="2026-11-18T23:30:00+09:00"><td class="n">8:00ごろ〜<span class="here">いまここ</span></td><td>コールが終わり、アナリストの最初のコメントが出ます。NBIS、CoreWeave、AMDの時間外の反応もここで見ます。</td></tr>
+    <tr data-from="2026-11-18T23:30:00+09:00" data-to="2026-11-20T06:00:00+09:00"><td class="n">23:30<span class="here">いまここ</span></td><td>通常取引が始まります。出来高がつくのはここからです。8月は初日+8.7%、2日目−4.6%でした。2日目まで見ても遅くありません。</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p><strong>6:20の確認項目</strong> <span class="prog" id="r-p1"></span></p>
+<div class="scroll">
+<table class="chk" data-prog="r-p1">
+  <thead><tr><th></th><th>見るもの</th><th>強い</th><th>弱い</th></tr></thead>
+  <tbody>
+    <tr><td><input type="checkbox" id="r-a1"></td><td><label for="r-a1">Q4売上見通し</label></td><td class="n">1,300億ドル以上</td><td class="n">1,200億ドル未満</td></tr>
+    <tr><td><input type="checkbox" id="r-a2"></td><td><label for="r-a2">Q4粗利率の見通し</label></td><td class="n">72%以上</td><td class="n">71%未満</td></tr>
+    <tr><td><input type="checkbox" id="r-a3"></td><td><label for="r-a3">Q3売上高</label></td><td class="n">1,102億ドル超</td><td class="n">1,080億ドル未満</td></tr>
+    <tr><td><input type="checkbox" id="r-a4"></td><td><label for="r-a4">Q3粗利率</label></td><td class="n">74%以上</td><td class="n">73.5%未満</td></tr>
+    <tr><td><input type="checkbox" id="r-a5"></td><td><label for="r-a5">データセンター売上</label></td><td class="n">1,018.5億ドル超</td><td class="n">それ未満</td></tr>
+    <tr><td><input type="checkbox" id="r-a6"></td><td><label for="r-a6">リリース本文の自社株買い、CEO選定、輸出規制への言及</label></td><td>具体的な金額や時期がある</td><td>何も書いていない</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p style="margin-top:1.6em">7:00のコールで聞く項目 <span class="prog" id="r-p2"></span></p>
+<div class="scroll">
+<table class="chk" data-prog="r-p2">
+  <thead><tr><th></th><th>聞くこと</th><th>なぜ聞くか</th></tr></thead>
+  <tbody>
+    <tr><td><input type="checkbox" id="r-b1"></td><td><label for="r-b1">来期（FY2028）約70%成長の目安を維持するか</label></td><td>8月に株価を押し上げた材料。取り下げると見通し全体が疑われる</td></tr>
+    <tr><td><input type="checkbox" id="r-b2"></td><td><label for="r-b2">辞任後に注文のキャンセルや延期があったか</label></td><td>受注は12〜18か月先まで埋まっているとされる。1件でも認めると悪材料</td></tr>
+    <tr><td><input type="checkbox" id="r-b3"></td><td><label for="r-b3">Vera Rubinの量産と、ラック部品の遅れ</label></td><td>UBSはラック出荷が本格化するのは2027年1〜3月と見ている</td></tr>
+    <tr><td><input type="checkbox" id="r-b4"></td><td><label for="r-b4">メモリ価格と、2月からの値上げの予定</label></td><td>粗利率が72〜73%に戻る根拠がこの値上げ</td></tr>
+    <tr><td><input type="checkbox" id="r-b5"></td><td><label for="r-b5">ネオクラウド向けの出資や保証を絞るのか</label></td><td>NVIDIAの申告書には約360億ドルのクラウド向け保証がある。NBISとCoreWeaveに直接響く</td></tr>
+    <tr><td><input type="checkbox" id="r-b6"></td><td><label for="r-b6">東南アジア4か国とブラジル向けの売上規模</label></td><td>11/16の許可制を見通しに織り込んだかどうか</td></tr>
+    <tr><td><input type="checkbox" id="r-b7"></td><td><label for="r-b7">正式なCEOをいつまでに決めるか</label></td><td>HSBCは「後任が決まるまで株価は苦戦する」と見ている</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>NBISはNVIDIAが上がっても下がる場合がある</h2>
+<p>NBISの11月16日の終値は107.13ドルで、7.55%安でした。NVIDIAの4.12%安に対して約1.8倍の下げです。理由はWSJの報道で、クレスがAI業界への資金支援を絞ると伝えられ、NVIDIAが出資する会社としてNebiusの名前が挙がりました。</p>
+<p>Nebiusは2027年に400〜450億ドルの設備投資を計画していて、これは時価総額約294億ドルの1.4〜1.5倍です。借りるか、株を発行するか、顧客から前払いを受けるかで賄うしかなく、NVIDIAの後ろ盾が弱まると条件が悪くなります。だからクレスがコールで「財務規律を強める」と言えば、NVIDIAの株主は歓迎し、NBISの株主は困るという逆向きの反応が起こり得ます。実際にクレスが何を言うかは、わかりません。</p>
+<p>一方で、Nebiusは顧客からの前払いをすでに増やしていて、報道が指摘した対応は済んでいるという反論もあります。Q3の売上は9.808億ドルで予想の9.075億ドルを超えました（うち約3.25億ドルは一時的な売上）。11月12日に17%下げたのは、データセンターの完成が遅れて2026年の売上の一部が翌年にずれるためです。</p>
+
+<div class="scroll">
+<table>
+  <thead><tr><th>NVIDIAの決算</th><th>資金支援の発言</th><th>NBISで起こりそうなこと</th><th>取れる対応</th></tr></thead>
+  <tbody>
+    <tr><td>強い</td><td>現状維持</td><td>反発。下げが大きかった分、戻りも大きい</td><td>持ち続ける。買い増すなら23:30以降に値が保たれるのを見てから</td></tr>
+    <tr><td>強い</td><td>絞ると明言</td><td>NVIDIAほど上がらない。下げることもある</td><td>NVIDIAの値動きを見て買わない。NBIS自体の価格で判断する</td></tr>
+    <tr><td>予想どおり</td><td>—</td><td>方向が出にくい</td><td>事前に決めた分割買いと損切りの価格を変えない</td></tr>
+    <tr><td>弱い</td><td>—</td><td>100ドルの攻防。割れると下げが速くなるおそれ</td><td>損切りの価格に来たら実行する。信用で買い下がらない</td></tr>
+  </tbody>
+</table>
+</div>
+<p>100ドルについて。Xで出回っているガンマ・エクスポージャーの推定では、NBISは153.74ドルより下にいる間、マーケットメーカーのヘッジ売買が値動きを増幅しやすく、100ドルと115ドルにプットの建玉が集中しています。100ドルは支えになる可能性がある半面、割れた瞬間に売りが加速する価格でもあります。推定値なので、どちらになるかはわかりません。</p>
+<p>現物を担保にして信用を使っている場合は、下落で担保の評価額も一緒に減ります。発表をまたぐ前に維持率を見ておいてください。私は投資助言の資格を持つ立場にないので、ここに書いたのは判断材料です。売買は自分で決めてください。</p>
+
+<h2>メモリ株だけは、NVIDIAの悪材料が追い風になり得る</h2>
+<p>11月16日の動きは報道で確認できた数字、論点の列は私の推論です。</p>
+<div class="scroll">
+<table>
+  <thead><tr><th>分野</th><th>銘柄</th><th class="n">11/16</th><th>決算で効く論点</th></tr></thead>
+  <tbody>
+    <tr><td>ネオクラウド</td><td>NBIS、CoreWeave、IREN</td><td class="n">NBIS −7.6%<br>CoreWeave −6.1%</td><td>資金支援の方針</td></tr>
+    <tr><td>AI半導体</td><td>AMD、Broadcom</td><td class="n">AMD −5.6%<br>Broadcom −3.9%</td><td>Q4見通しが強ければ連れ高。輸出規制はAMDにも同じく掛かる</td></tr>
+    <tr><td>メモリ</td><td>SK Hynix、Kioxia、SanDisk、Micron</td><td class="n">—</td><td>NVIDIAの粗利率を削っているのはメモリの値上がり。「メモリ費用がまだ上がる」という発言は、メモリを売る側には好材料</td></tr>
+    <tr><td>光通信、接続</td><td>CRDO、AAOI、CIEN</td><td class="n">—</td><td>Rubinのラック出荷の時期</td></tr>
+    <tr><td>電力</td><td>Bloom Energy</td><td class="n">—</td><td>データセンター建設が続くか。来期70%成長の維持が間接的な目安</td></tr>
+  </tbody>
+</table>
+</div>
+<p>需要そのものは数字で確認できます。Microsoft、Alphabet、Amazon、Metaの7〜9月期の設備投資は合計2,019億ドルで、前年の2.08倍でした。4社とも10〜12月期はさらに増やすと説明しています。NVIDIAが部品メーカーと結んだ長期の供給契約は7月末で2,790億ドルあり、4月末の1,190億ドルから2.3倍に増えました。</p>
+
+<h2>目標株価は170ドルから255ドルまで割れている</h2>
+<div class="scroll">
+<table>
+  <thead><tr><th>会社</th><th>判断</th><th class="n">目標株価</th><th>理由</th></tr></thead>
+  <tbody>
+    <tr><td>CLSA</td><td>買い（1段階引き下げ）</td><td class="n">$425 → $255</td><td>辞任を受けて確信度を下げた</td></tr>
+    <tr><td>Citi</td><td>—</td><td class="n">$285 → $225</td><td>—</td></tr>
+    <tr><td>みずほ</td><td>買い</td><td class="n">$250 → $220</td><td>フアン氏は業界の取引をまとめる役だったと評価</td></tr>
+    <tr><td>Bernstein</td><td>中立へ格下げ</td><td class="n">$400 → $200</td><td>業績は健全だが、不確実さが大きすぎる</td></tr>
+    <tr><td>HSBC</td><td>中立へ格下げ</td><td class="n">$365 → $170</td><td>後任が決まるまで苦戦する。輸出規制のリスク</td></tr>
+    <tr><td>UBS</td><td>買い</td><td class="n">確認できず</td><td>市場の織り込みは厳しすぎる。成長はあと2年は続く</td></tr>
+    <tr><td>Morningstar</td><td>星4つ</td><td class="n">適正価値 $310</td><td>不確実性の評価は「非常に高い」</td></tr>
+  </tbody>
+</table>
+</div>
+<p>割安かどうかの数字も情報源で食い違います。予想PERはInvesting.comが約17.5倍、24/7 Wall St.が約11倍と書いていて、どちらが正しいか私には確認できていません。</p>
+
+<h2>過去5回は全部が好決算で、翌日に上がったのは1回</h2>
+<div class="scroll">
+<table id="r-hist">
+  <thead><tr><th>発表</th><th class="n">翌日</th><th>下落 ｜ 上昇</th><th>その後</th></tr></thead>
+  <tbody>
+    <tr><td class="n">2025年8月</td><td class="n">−0.8%</td><td><div class="hb"><i class="dn" data-w="0.8"></i></div></td><td>2日間で−4.1%</td></tr>
+    <tr><td class="n">2025年11月</td><td class="n">−3.2%</td><td><div class="hb"><i class="dn" data-w="3.2"></i></div></td><td>2日間で−4.1%</td></tr>
+    <tr><td class="n">2026年2月</td><td class="n">−5.5%</td><td><div class="hb"><i class="dn" data-w="5.5"></i></div></td><td>—</td></tr>
+    <tr><td class="n">2026年5月</td><td class="n">−1.8%</td><td><div class="hb"><i class="dn" data-w="1.8"></i></div></td><td>—</td></tr>
+    <tr><td class="n">2026年8月</td><td class="n">+8.7%</td><td><div class="hb"><i class="up" data-w="8.7"></i></div></td><td>翌々日に−4.6%</td></tr>
+  </tbody>
+</table>
+</div>
+<p>今回が過去と違うのは、発表前に35%下げていることです。これまでは期待で上がったところに決算が来て売られました。今回は逆の位置から始まるので、同じ結果になるとは限りません。</p>
+
+<h2>決算が良くても残るリスクが5つある</h2>
+<div class="scroll">
+<table>
+  <tbody>
+    <tr><td style="width:9em">CEOの不在</td><td>正式な後任は未定。取締役会は人材紹介会社を選んでいる段階で、ベッセント財務長官は外部からの起用を求めている</td></tr>
+    <tr><td>調査と訴訟</td><td>法律事務所Wachtell Liptonが、機密や安全保障への影響を調べている。議会の調査と株主の集団訴訟もある</td></tr>
+    <tr><td>輸出規制</td><td>11/16の規則はQ3の数字には影響しにくい。来期以降の見通しにどれだけ響くかは、許可の出方しだいでわからない</td></tr>
+    <tr><td>金利</td><td>12月9日のFRB会合で0.25%の利上げが91%織り込まれているとKiplingerが報じている</td></tr>
+    <tr><td>迂回販売の疑い</td><td>空売り調査会社Culper Researchが「中国への不正な販売が売上の20%」と主張。裏付けは確認されていない</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>出典</h2>
+<p class="small">売上予想は1,087〜1,094億ドル、EPS予想は2.47〜2.49ドル、織り込み値幅は8.3〜9.7%と、情報源で差があります。</p>
+<ol class="src">
+  <li><a href="https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000082/nvidiaannouncesceotransiti.htm">NVIDIA 8-K：CEO交代（SEC）</a></li>
+  <li><a href="https://www.implicator.ai/nvidia-stock-16-month-low-q3-earnings/">Implicator：11/16の終値、輸出規制、取締役会の報道</a></li>
+  <li><a href="https://www.kiplinger.com/news/live/nvidia-earnings-live-updates-and-commentary-november-2026">Kiplinger：UBS、Bernstein、Zacksの見解</a></li>
+  <li><a href="https://www.investing.com/news/stock-market-news/nvidia-earnings-scenarios-what-a-guidance-cut-could-mean-for-the-stock-93CH-5030809">Investing.com：見通し別の株価試算</a></li>
+  <li><a href="https://fourweekmba.com/ai-nvidias-q3-guide-is-108b-12-above-q2-what-17-nov-tests/">FourWeekMBA：Q3見通しの詳細</a></li>
+  <li><a href="https://fourweekmba.com/ai-nvidia-earnings-tuesday-the-bar-is-2-49-after-4-eps-beats/">FourWeekMBA：EPS予想</a></li>
+  <li><a href="https://finviz.com/news/420663/nvidias-vera-rubin-ramp-meets-a-margin-reset-as-shares-slide-toward-range-lows">Earnings Whispers：粗利率、EPS見通し、ウィスパー</a></li>
+  <li><a href="https://www.techtarget.com/news/Nvidia-price-hike-will-raise-IT-costs-for-all-analysts-say/856987/">TechTarget：粗利率の底と値上げ</a></li>
+  <li><a href="https://finance.yahoo.com/markets/options/articles/nvidia-q3-earnings-preview-options-205720323.html">Yahoo Finance：織り込み値幅9.67%</a></li>
+  <li><a href="https://www.benzinga.com/markets/options/26/11/63277522/nvidia-earnings-without-jensen-huang-could-trigger-341-billion-stock-swing-as-options-traders-brace-for-volatility">Benzinga：織り込み値幅8.27%</a></li>
+  <li><a href="https://www.benzinga.com/markets/equities/26/11/63277138/nvidia-stock-faces-first-earnings-since-jensen-huangs-ouster-as-options-signal-a-big-move">Benzinga：Culper Researchの主張</a></li>
+  <li><a href="https://www.nbcnews.com/tech/tech-news/us-closes-loophole-let-chinese-companies-use-top-ai-chips-rcna609634">NBC News：商務省の輸出規則</a></li>
+  <li><a href="https://thenextweb.com/news/nvidia-financing-kress-neoclouds-upfront-payments">The Next Web：資金支援縮小の報道</a></li>
+  <li><a href="https://finance.yahoo.com/markets/stocks/articles/nebius-stocks-sink-8-nvidias-175002087.html">Yahoo Finance：Nebiusの設備投資計画</a></li>
+  <li><a href="https://www.thestreet.com/investing/nebius-nbis-stock-sinks-18-despite-record-quarter">TheStreet：Nebius Q3決算</a></li>
+  <li><a href="https://x.com/firstadopter/status/2122172418760339737">Tae Kim（X）：前払いは増加済みとの指摘</a></li>
+  <li><a href="https://stockanalysis.com/stocks/nbis/">StockAnalysis：NBISの終値</a></li>
+  <li><a href="https://walnutinvest.com/stats/ai-capex-statistics">Walnut：大手4社の設備投資</a></li>
+  <li><a href="https://cryptobriefing.com/nvidia-q3-fy2027-preview-279-billion-supply/">Crypto Briefing：供給契約2,790億ドル</a></li>
+  <li><a href="https://www.cnbc.com/2026/11/12/jensen-huang-nvidia-affair-ceo.html">CNBC：辞任後のアナリストの見解</a></li>
+  <li><a href="https://mlq.ai/news/hsbc-downgrades-nvidia-to-hold-and-cuts-its-price-target-to-170-from-365-citing-ceo-succession-and-export-risk/">MLQ：HSBCの格下げ</a></li>
+  <li><a href="https://cnbc.com/2026/11/16/nvidia-gets-two-more-price-target-cuts-from-analysts-ahead-of-earnings.html">CNBC：みずほの目標株価</a></li>
+  <li><a href="https://finance.biggo.com/news/f34cbfa4-f030-4490-958c-ea1576225082">BigGo：CLSAの目標株価</a></li>
+  <li><a href="https://www.morningstar.com/stocks/what-watch-nvidia-earnings-spy-scandal-data-center-concerns-take-center-stage">Morningstar：適正価値</a></li>
+  <li><a href="https://finance.yahoo.com/markets/stocks/articles/hsbc-just-downgraded-nvidia-cut-170353729.html">24/7 Wall St.：予想PER約11倍</a></li>
+  <li><a href="https://nasdaq.com/articles/history-says-nvidia-going-disappoint-wall-street-after-aug-26">Nasdaq：過去の決算後の値動き</a></li>
+  <li><a href="https://ts2.tech/en/nvidia-stock-drops-4-6-erasing-253-billion-as-margin-risk-overshadows-108-billion-guide/">TS2：8月決算後の値動き</a></li>
+</ol>
+
+</div>
+</div>
+<script>
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var items = [
+    ['NVDA','$156.14','−4.12%','t-down'],['NBIS','$107.13','−7.55%','t-down'],['CoreWeave','','−6.1%','t-down'],
+    ['AMD','','−5.6%','t-down'],['Broadcom','','−3.9%','t-down'],['S&P500','','−1.9%','t-down'],['Nasdaq','','−2.5%','t-down'],
+    ['Q3売上見通し','$108.0B ±2%','','t-flat'],['Q4売上予想','約$125B','','t-flat'],['織り込み値幅','±9%前後','','t-flat']
+  ];
+  var tk = document.getElementById('tick'), html = '';
+  for (var r = 0; r < 2; r++) items.forEach(function(i){
+    html += '<span><b>' + i[0] + '</b> ' + i[1] + ' <span class="' + i[3] + '">' + i[2] + '</span></span>';
+  });
+  tk.innerHTML = html;
+
+  var target = new Date('2026-11-18T06:20:00+09:00').getTime();
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function tickCd(){
+    var d = target - Date.now();
+    var h = document.getElementById('cd-h'), m = document.getElementById('cd-m'), s = document.getElementById('cd-s');
+    if (d <= 0){
+      h.textContent = '00'; m.textContent = '00'; s.textContent = '00';
+      document.getElementById('cd-note').textContent = '発表時刻を過ぎました。判定ツールに実際の数字を入れてください';
+      return;
+    }
+    var sec = Math.floor(d / 1000);
+    h.textContent = pad(Math.floor(sec / 3600));
+    m.textContent = pad(Math.floor(sec % 3600 / 60));
+    s.textContent = pad(sec % 60);
+  }
+  tickCd(); setInterval(tickCd, 1000);
+
+  var pts = [['10/6',239.24],['11/4',200.13],['11/5',181.60],['11/6',186.64],['11/9',178.67],['11/10',168.89],['11/13',162.85],['11/16',156.14]];
+  var svg = document.getElementById('price'), W = 760, H = 300, L = 52, R = 70, T = 24, B = 40;
+  var lo = 140, hi = 250;
+  function X(i){ return L + (W - L - R) * i / (pts.length - 1); }
+  function Y(v){ return T + (H - T - B) * (hi - v) / (hi - lo); }
+  var s = '';
+  [150,175,200,225,250].forEach(function(v){
+    s += '<line class="grid-l" x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(v) + '" y2="' + Y(v) + '"/>';
+    s += '<text x="' + (L - 8) + '" y="' + (Y(v) + 4) + '" text-anchor="end">$' + v + '</text>';
+  });
+  var d = '', len = 0;
+  pts.forEach(function(p, i){
+    d += (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(p[1]).toFixed(1);
+    if (i) len += Math.hypot(X(i) - X(i - 1), Y(p[1]) - Y(pts[i - 1][1]));
+    s += '<text x="' + X(i) + '" y="' + (H - 14) + '" text-anchor="middle">' + p[0] + '</text>';
+  });
+  s += '<path class="path-area" d="' + d + 'L' + X(pts.length - 1) + ' ' + Y(lo) + 'L' + X(0) + ' ' + Y(lo) + 'Z"/>';
+  s += '<path class="path-line draw" style="--len:' + Math.ceil(len) + '" d="' + d + '"/>';
+  pts.forEach(function(p, i){
+    var last = i === pts.length - 1, first = i === 0;
+    s += '<circle cx="' + X(i) + '" cy="' + Y(p[1]) + '" r="' + (last ? 5.5 : 3.5) + '" fill="var(--' + (last ? 'accent' : 'down') + ')"/>';
+    if (first || last || i === 2){
+      var dy = (first || last) ? 4 : -10;
+      s += '<text class="lbl" x="' + (X(i) + 10) + '" y="' + (Y(p[1]) + dy) + '" style="font-family:var(--mono);font-weight:600">$' + p[1].toFixed(2) + '</text>';
+    }
+  });
+  svg.innerHTML = s;
+
+  document.querySelectorAll('.track').forEach(function(t){
+    var mn = +t.dataset.min, mx = +t.dataset.max;
+    function pc(v){ return (v - mn) / (mx - mn) * 100; }
+    t.querySelectorAll('.zone').forEach(function(z){
+      z.style.left = pc(+z.dataset.a) + '%'; z.style.width = (pc(+z.dataset.b) - pc(+z.dataset.a)) + '%';
+    });
+    t.querySelectorAll('.pin').forEach(function(p){ p.style.left = 'calc(' + pc(+p.dataset.x) + '% - 1px)'; });
+  });
+
+  (function(){
+    var mn = 124, mx = 180, el = document.getElementById('range');
+    function pc(v){ return (v - mn) / (mx - mn) * 100; }
+    var b = el.querySelector('.range-band');
+    b.style.left = pc(+b.dataset.a) + '%'; b.style.width = (pc(+b.dataset.b) - pc(+b.dataset.a)) + '%';
+    el.querySelectorAll('.mk').forEach(function(m){ m.style.left = pc(+m.dataset.x) + '%'; });
+  })();
+
+  document.querySelectorAll('#hist .hb').forEach(function(hb){
+    var i = hb.querySelector('i'), sp = hb.querySelector('span'), h = +i.dataset.h * 8;
+    i.style.height = h + 'px';
+    if (i.classList.contains('p')) sp.style.bottom = (75 + h + 4) + 'px';
+    else sp.style.top = (95 + h + 4) + 'px';
+  });
+
+  var q4 = document.getElementById('j-q4'), rev = document.getElementById('j-rev'), gm = document.getElementById('j-gm'),
+      gm4 = document.getElementById('j-gm4'), tone = document.getElementById('j-tone');
+  function score(q, r, g, g4, t){
+    var p = 0;
+    p += q >= 130 ? 3 : q >= 127 ? 2 : q >= 123 ? 0 : q >= 118 ? -2 : -4;
+    p += r >= 112 ? 2 : r > 110.16 ? 1 : r >= 108 ? 0 : -2;
+    p += g >= 74.5 ? 1 : g >= 73.5 ? 0 : -2;
+    return p + g4 + t;
+  }
+  function judge(){
+    var q = +q4.value, r = +rev.value, g = +gm.value;
+    document.getElementById('o-q4').textContent = (q * 10).toLocaleString('ja-JP') + '億ドル';
+    document.getElementById('o-rev').textContent = Math.round(r * 10).toLocaleString('ja-JP') + '億ドル';
+    document.getElementById('o-gm').textContent = g.toFixed(1) + '%';
+    var p = score(q, r, g, +gm4.value, +tone.value);
+    var res = document.getElementById('res'), t, dsc, st;
+    if (p >= 5){ t = '強い。上昇しやすい形'; dsc = '見通し、利益率、説明の3つがそろっています。試算では+6〜+10%の範囲です。'; st = 'up'; }
+    else if (p >= 1){ t = 'やや強い'; dsc = '良い内容ですが決め手に欠けます。コールの発言しだいで上にも下にも振れます。'; st = 'up'; }
+    else if (p >= -2){ t = '予想どおり。材料出尽くしに注意'; dsc = '悪くはないものの驚きがありません。試算では−4〜+4%の範囲で、戻り売りが出やすい形です。'; st = 'mid'; }
+    else { t = '弱い。下落しやすい形'; dsc = '見通しか利益率、または説明のどこかに明確な不安があります。52週安値$148.80が意識されます。'; st = 'down'; }
+    res.dataset.s = st;
+    document.getElementById('res-t').textContent = t;
+    document.getElementById('res-d').textContent = dsc;
+    document.getElementById('res-s').textContent = '合計 ' + (p > 0 ? '+' : '') + p + ' 点（−14〜+9点の範囲。+5以上で強い、−3以下で弱い）';
+    document.getElementById('res-g').style.left = 'calc(' + ((p + 14) / 23 * 100) + '% - 3px)';
+  }
+  [q4, rev, gm, gm4, tone].forEach(function(e){ e.addEventListener('input', judge); });
+  judge();
+
+  function countUp(el){
+    var end = +el.dataset.count, dec = +el.dataset.dec, t0 = performance.now(), dur = 1100;
+    (function step(now){
+      var k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+      el.textContent = (end * e).toFixed(dec);
+      if (k < 1) requestAnimationFrame(step); else el.textContent = end.toFixed(dec);
+    })(t0);
+  }
+  if (!reduce){
+    document.querySelectorAll('[data-count]').forEach(countUp);
+    if ('IntersectionObserver' in window){
+      var io = new IntersectionObserver(function(es){
+        es.forEach(function(e){
+          if (!e.isIntersecting) return;
+          var el = e.target;
+          if (el.classList.contains('draw') || el.classList.contains('grow') || el.classList.contains('range-band')) el.classList.add('go');
+          else if (el.tagName === 'I'){
+            el.animate([{transform:'scaleY(0)'},{transform:'scaleY(1)'}], {duration:800, easing:'cubic-bezier(.2,.8,.2,1)'});
+          } else el.classList.add('enter');
+          io.unobserve(el);
+        });
+      }, {threshold:.15});
+      document.querySelectorAll('.draw,.grow,.range-band,#hist i,.card,.tl-item,.panel,.tile,.verdict').forEach(function(el, i){
+        if (el.classList.contains('card') || el.classList.contains('tile')) el.style.animationDelay = (i % 4) * 80 + 'ms';
+        io.observe(el);
+      });
+    }
+  }
+})();
+</script>
+<script>
+(function(){
+  /* countdown + current phase */
+  var target = new Date('2026-11-18T06:20:00+09:00').getTime();
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function tick(){
+    var now = Date.now(), d = target - now, el = document.getElementById('r-cd');
+    if (d <= 0){ el.textContent = '発表済み'; document.getElementById('r-cdl').textContent = '下の判定に実際の数字を入れてください'; }
+    else { var s = Math.floor(d / 1000); el.textContent = pad(Math.floor(s / 3600)) + ':' + pad(Math.floor(s % 3600 / 60)) + ':' + pad(s % 60); }
+    document.querySelectorAll('#r-phase tr').forEach(function(tr){
+      var f = tr.dataset.from === '0' ? 0 : new Date(tr.dataset.from).getTime(), t = new Date(tr.dataset.to).getTime();
+      tr.classList.toggle('cur', now >= f && now < t);
+    });
+  }
+  tick(); setInterval(tick, 1000);
+
+  /* price chart */
+  var pts = [['10/6',239.24],['11/4',200.13],['11/5',181.60],['11/6',186.64],['11/9',178.67],['11/10',168.89],['11/13',162.85],['11/16',156.14]];
+  var W = 760, H = 270, L = 48, R = 74, T = 18, B = 34, lo = 140, hi = 250;
+  function X(i){ return L + (W - L - R) * i / (pts.length - 1); }
+  function Y(v){ return T + (H - T - B) * (hi - v) / (hi - lo); }
+  var s = '', d = '', len = 0;
+  [150,175,200,225,250].forEach(function(v){
+    s += '<line class="gl" x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(v) + '" y2="' + Y(v) + '"/><text x="' + (L - 8) + '" y="' + (Y(v) + 4) + '" text-anchor="end">$' + v + '</text>';
+  });
+  pts.forEach(function(p, i){
+    d += (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(p[1]).toFixed(1);
+    if (i) len += Math.hypot(X(i) - X(i - 1), Y(p[1]) - Y(pts[i - 1][1]));
+    s += '<text x="' + X(i) + '" y="' + (H - 10) + '" text-anchor="middle">' + p[0] + '</text>';
+  });
+  s += '<path class="pl" style="--len:' + Math.ceil(len) + '" d="' + d + '"/>';
+  pts.forEach(function(p, i){
+    var last = i === pts.length - 1;
+    s += '<circle cx="' + X(i) + '" cy="' + Y(p[1]) + '" r="' + (last ? 5 : 3) + '" fill="var(--' + (last ? 'accent' : 'ink') + ')"/>';
+    if (i === 0 || i === 2 || last) s += '<text class="v" x="' + (X(i) + 9) + '" y="' + (Y(p[1]) + (i === 2 ? -9 : 4)) + '">$' + p[1].toFixed(2) + '</text>';
+  });
+  document.getElementById('r-price').innerHTML = s;
+
+  /* price levels */
+  (function(){
+    var mn = 124, mx = 180, el = document.getElementById('r-lv');
+    function pc(v){ return (v - mn) / (mx - mn) * 100 + '%'; }
+    var b = el.querySelector('.band');
+    b.style.left = pc(+b.dataset.a); b.style.width = ((+b.dataset.b - +b.dataset.a) / (mx - mn) * 100) + '%';
+    el.querySelectorAll('.m').forEach(function(m){ m.style.left = pc(+m.dataset.x); });
+  })();
+
+  /* history bars: 10% = full half */
+  document.querySelectorAll('#r-hist i').forEach(function(i){ i.style.width = '0'; });
+  setTimeout(function(){
+    document.querySelectorAll('#r-hist i').forEach(function(i){
+      var w = +i.dataset.w; i.style.width = (w / 10 * (i.classList.contains('up') ? 60 : 40)) + '%';
+    });
+  }, 60);
+
+  /* checklists */
+  document.querySelectorAll('.v2 table.chk').forEach(function(t){
+    var boxes = t.querySelectorAll('input'), out = document.getElementById(t.dataset.prog);
+    function upd(){
+      var n = 0; boxes.forEach(function(b){ if (b.checked) n++; b.closest('tr').classList.toggle('done', b.checked); });
+      out.textContent = n + ' / ' + boxes.length;
+    }
+    boxes.forEach(function(b){ b.addEventListener('change', upd); }); upd();
+  });
+
+  /* judge */
+  var q4 = document.getElementById('r-q4'), rev = document.getElementById('r-rev'), gm = document.getElementById('r-gm'), gm4 = document.getElementById('r-gm4'), tone = document.getElementById('r-tone');
+  function judge(){
+    var q = +q4.value, r = +rev.value, g = +gm.value, p = 0;
+    document.getElementById('r-oq4').textContent = (q * 10).toLocaleString('ja-JP') + '億ドル';
+    document.getElementById('r-orev').textContent = Math.round(r * 10).toLocaleString('ja-JP') + '億ドル';
+    document.getElementById('r-ogm').textContent = g.toFixed(1) + '%';
+    p += q >= 130 ? 3 : q >= 127 ? 2 : q >= 123 ? 0 : q >= 118 ? -2 : -4;
+    p += r >= 112 ? 2 : r > 110.16 ? 1 : r >= 108 ? 0 : -2;
+    p += g >= 74.5 ? 1 : g >= 73.5 ? 0 : -2;
+    p += +gm4.value + +tone.value;
+    var t, dsc;
+    if (p >= 5){ t = '強い'; dsc = '見通し、粗利率、説明がそろいました。試算では+6〜+10%です。'; }
+    else if (p >= 1){ t = 'やや強い'; dsc = '良い内容ですが、買いが続くかはコールの答え方で変わります。'; }
+    else if (p >= -2){ t = '予想どおり'; dsc = '驚きがない形です。試算では−4〜+4%で、上げても売りに押されやすいです。'; }
+    else { t = '弱い'; dsc = '見通し、粗利率、説明のどれかに不安があります。148.80ドルを試す展開です。'; }
+    document.getElementById('r-rt').textContent = t;
+    document.getElementById('r-rd').textContent = dsc;
+    document.getElementById('r-rs').textContent = '合計 ' + (p > 0 ? '+' : '') + p + ' 点（−14〜+9点。+5以上が強い、−3以下が弱い）';
+    document.getElementById('r-ptr').style.left = 'calc(' + ((p + 14) / 23 * 100) + '% - 4px)';
+  }
+  [q4, rev, gm, gm4, tone].forEach(function(e){ e.addEventListener('input', judge); });
+  judge();
+})();
+</script>
+<script>
+(function(){
+  var names=['cards','report'];
+  function show(n){
+    if(names.indexOf(n)<0)n='cards';
+    names.forEach(function(k){
+      var v=document.getElementById(k),on=k===n;
+      v.hidden=!on; v.classList.toggle('shown',on);
+      document.getElementById('tab-'+k).setAttribute('aria-selected',on?'true':'false');
+    });
+  }
+  names.forEach(function(k){
+    document.getElementById('tab-'+k).addEventListener('click',function(){
+      try{location.hash=k;}catch(e){}
+      show(k); window.scrollTo(0,0);
+    });
+  });
+  window.addEventListener('hashchange',function(){show(location.hash.slice(1));});
+  show(location.hash.slice(1));
+  setTimeout(function(){window.scrollTo(0,0);},0);
+})();
+</script>
+</body>
+</html>
